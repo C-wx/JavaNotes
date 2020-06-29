@@ -2,26 +2,27 @@
 
 **死鬼~看完记得给我来个三连哦！**
 
-![](https://user-gold-cdn.xitu.io/2020/4/11/17169c46045528af?w=240&h=224&f=jpeg&s=7529)
+![](https://ae01.alicdn.com/kf/Hed1545c9e7064d119e608fb4df406c9bc.jpg)
 
->本文主要介绍 `SprinMVC`
->如有需要，可以参考
->如有帮助，不忘 **点赞** ❥
+> 本文主要介绍 `SprinMVC`
+> 如有需要，可以参考
+> 如有帮助，不忘 **点赞** ❥
 >
->创作不易，白嫖无义！
+> 创作不易，白嫖无义！
 
 ### 一丶SpringMVC概述
 
-- Spring 为展现层提供的基于 MVC 设计理念的优秀的Web 框架，是目前最主流的 MVC 框架之一
-- Spring3.0 后全面超越 Struts2，成为最优秀的 MVC 框架
-- Spring MVC 通过一套 MVC 注解，让 POJO 成为处理请  求的控制器，而无须实现任何接口。
-- 支持 REST 风格的 URL 请求
-- 采用了松散耦合可插拔组件结构，比其他 MVC 框架更具扩展性和灵活性
+- Spring 为展现层提供的基于 MVC 设计理念的优秀的Web 框架，是目前最主流的 `MVC` 框架之一
+- Spring3.0 后全面`超越 Struts2`，成为最优秀的 MVC 框架
+- Spring MVC 通过一套 MVC 注解，让 `POJO` 成为处理请求的控制器，而无须实现任何接口。
+- 支持 `REST` 风格的 URL 请求
+- 采用了`松散耦合可插拔`组件结构，比其他 MVC 框架更具扩展性和灵活性
 
 ### 二丶SpringMVC简单使用
+
 #### 1）在 web.xml 中配置 DispatcherServlet：
 
-````xml
+```xml
 <!-- 配置 DispatcherServlet -->
 	<servlet>
 		<servlet-name>dispatcherServlet</servlet-name>
@@ -41,10 +42,11 @@
 		<servlet-name>dispatcherServlet</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
-````
-####  2）加入 Spring MVC 的配置文件
+```
 
-````xml
+#### 2）加入 Spring MVC 的配置文件
+
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -64,17 +66,18 @@
 	</bean>
 	
 </beans>
-````
+```
+
 #### 3）编写处理请求的处理器，并使用**@Controller** 注解标识为处理器
 
-````java
+```java
 @Controller
 public class HelloWorldController {
 	/**
-	 * 1. 使用 @RequestMapping 注解来映射请求的 URL
-	 * 2. 返回值会通过视图解析器解析为实际的物理视图, 对于 InternalResourceViewResolver 视图解析器, 会做如下的解析:
-	 * 通过 prefix + returnVal + 后缀 这样的方式得到实际的物理视图, 然会做转发操作
-	 * /WEB-INF/views/success.jsp
+	   1. 使用 @RequestMapping 注解来映射请求的 URL
+	   2. 返回值会通过视图解析器解析为实际的物理视图, 对于 InternalResourceViewResolver 视图解析器, 会做如下的解析:
+	      通过 prefix + returnVal + 后缀 这样的方式得到实际的物理视图, 然会做转发操作
+	      ==> /WEB-INF/views/success.jsp
 	 */
 	@RequestMapping("/helloworld")
 	public String hello(){
@@ -82,16 +85,15 @@ public class HelloWorldController {
 		return "success";
 	}
 }
-````
+```
+
 #### 4） 编写视图 JSP
 
 在/WEB-INF/views/目录下创建一个succes.jsp
 
-````jsp
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+```jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-    
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -102,26 +104,29 @@ public class HelloWorldController {
 	<h1>成功跳转页面</h1>
 </body>
 </html>
-````
+```
+
 #### 5）将项目运行起来访问 ：localhost:8080/hellowoorld
 
 ![](https://img-blog.csdnimg.cn/20190927211910474.png)
+
 ### 三丶使用 @RequestMapping 映射请求
 
 - Spring MVC 使用 `@RequestMapping` 注解为控制器指定可以处理哪些 URL 请求
 - 在控制器的`类`定义及`方法`定义处都可标注
-  - *类定义*：提供初步的请求映射信息。相对于 WEB 应用的根目录
-  - *方法*：提供进一步的细分映射信息。相对于类定义处的 URL。若类定义处未标注 @RequestMapping，则方法处标记的 URL 相对于` WEB 应用的根目录`
+    - *类定义*：提供初步的请求映射信息。相对于 WEB 应用的根目录
+    - *方法*：提供进一步的细分映射信息。相对于类定义处的 URL。若类定义处未标注 @RequestMapping，则方法处标记的 URL 相对于` WEB 应用的根目录`
 - `DispatcherServlet` 截获请求后，就通过控制器上`@RequestMapping` 提供的映射信息确定请求所对应的处理 方法。
 
 #### 1）标准请求头
 
 ![](https://img-blog.csdnimg.cn/20190927212628134.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
+
 #### 2）@RequestMapping
 
 @RequestMapping 的**value**、**method**、**params** 及 **heads**  分别表示***请求 URL***、***请求方法***、***请求参数***及***请求头的映射条件***，他们之间是*与*的关系，联合使用多个条件可让请求映射更加精确化。
 
-````java
+```java
 /**
 	 * 可以使用 params 和 headers 来更加精确的映射请求. params 和 headers 支持简单的表达式.
 	 * 
@@ -135,7 +140,8 @@ public class HelloWorldController {
 		System.out.println("test...");
 		return "success";
 	}
-````
+```
+
 #### 3）支持Ant 风格
 
 - `?` ：匹配文件名中的一个字符
@@ -144,13 +150,13 @@ public class HelloWorldController {
 
 匹配  /user/createUser*a* 或者 user/createUser*b* 等 URL
 
-- `*`：匹配文件名中的任意字符
+- `*` ：匹配文件名中的任意字符
 
-**/user/*/createUser: **
+**/user/\*/createUser**
 
 匹配 /user/*aaa*/createUser 或者 /user/*bbb*/createUser 等 URL
 
-- `**`：** 匹配多层路径
+- `**` ：匹配多层路径
 
 **/user/\**/createUser**
 
@@ -163,7 +169,7 @@ public class HelloWorldController {
 - 带占位符的 URL 是 Spring3.0 新增的功能，该功能在  SpringMVC 向 REST 目标挺进发展过程中具有里程碑的意义
 - 通过`@PathVariable`可以将 URL 中占位符参数绑定到控制器处理方法的入参中：URL 中的 `{xxx}` 占位符可以通过`@PathVariable("xxx")` 绑定到操作方法的入参中。
 
-````java
+```java
 /**
  * @PathVariable 可以来映射 URL 中的占位符到目标方法的参数中.
  */
@@ -172,18 +178,17 @@ public String test(@PathVariable("id") Integer id) {
 	System.out.println("id: " + id);
 	return "success";
 }
-````
+```
+
 ### 五丶REST风格
+
 > `REST`：即 Representational State Transfer。（资源）表现层状态转化。是目前最流行的一种互联网软件架构。它结构清晰、符合标准、易于理解、扩展方便，  所以正得到越来越多网站的采用
 
 *示例*：
 
 - /order/1	HTTP `GET` ：***得到*** id = 1 的 order 记录
-
 - /order/1	HTTP `DELETE`：***删除*** id = 1的 order 记录
-
 - /order/1	HTTP `PUT`：***更新*** id = 1的 order 记录
-
 - /order	HTTP `POST`：***新增*** 一条order记录
 
 ### 六丶@RequestParam 绑定请求参数值
@@ -192,7 +197,7 @@ public String test(@PathVariable("id") Integer id) {
   - `value`：参数名
   - `required`：是否必须；默认为 true，表示请求参数中必须包含对应的参数，若不存在，将抛出异常
 
-````java
+```java
 /**
  * @RequestParam 来映射请求参数. value 值即请求参数的参数名 required 该参数是否必须. 默认为 true
  *               defaultValue 请求参数的默认值
@@ -204,9 +209,11 @@ public String testRequestParam(
 	System.out.println("testRequestParam, username: " + username + ", age: " + age);
 	return "success";
 }
-````
+```
+
 ### 七丶@RequestHeader 绑定请求报头的属性值
-````java
+
+```java
 /**
  *   映射请求头信息 用法同 @RequestParam
  */
@@ -216,9 +223,11 @@ public String testRequestHeader(
 	System.out.println("testRequestHeader, Accept-Language: " + al);
 	return "success";
 }
-````
+```
+
 ### 八丶@CookieValue 绑定请求中的 Cookie 值
-````java
+
+```java
 /**
  * @CookieValue: 映射一个 Cookie 值. 属性同 @RequestParam
  */
@@ -227,9 +236,11 @@ public String testCookieValue(@CookieValue("JSESSIONID") String sessionId) {
 	System.out.println("testCookieValue: sessionId: " + sessionId);
 	return "success";
 }
-````
+```
+
 ### 九丶POJO 对象绑定请求参数值
-````java
+
+```java
 /**
  * Spring MVC 会按请求参数名和 POJO 属性名进行自动匹配， 自动为该对象填充属性值。支持级联属性。
  * 如：dept.deptId、dept.address.tel 等
@@ -239,27 +250,22 @@ public String testPojo(User user) {
 	System.out.println("testPojo: " + user);
 	return "success";
 }
-````
-### 十丶MVC 中Handler 方法可以接受的ServletAPI 类型的参数
+```
+
+### 十丶MVC 中Handler 方法可以接收的ServletAPI 类型的参数
+
 - *HttpServletRequest*
-
 - *HttpServletResponse*
-
 - *HttpSession*
-
 - *Writer*
-
 - java.security.Principal
-
 - Locale
-
 - InputStream
-
 - OutputStream
-
 - Reader
 
 ### 十一丶处理模型数据
+
 1）`ModelAndView`
 
 处理方法返回值类型为 ModelAndView时，方法体可通过该对象添加模型数据，ModelAndView中既包含**视图信息**，也包含**模型数据信息**。
@@ -310,7 +316,8 @@ public String testPojo(User user) {
 我们只需要实现View这个接口就可以自定义视图
 
 ##### *示例*：
-````java
+
+```java
 @Component
 public class HelloView implements View{
 	@Override
@@ -323,14 +330,15 @@ public class HelloView implements View{
 		response.getWriter().print("hello view, time: " + new Date());
 	}
 }
-````
-````java
+```
+
+```java
 @RequestMapping("/testView")
 	public String testView(){
 		System.out.println("testView");
 		return "helloView";	//这里返回的就是我们自定义的视图
 	}
-````
+```
 
 ![](https://img-blog.csdnimg.cn/2019092722493042.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
 
@@ -345,7 +353,7 @@ public class HelloView implements View{
 
 *SpringMVC.xml中的配置*：
 
-````xml
+```xml
 <!-- 配置视图解析器: 如何把 handler 方法返回值解析为实际的物理视图 -->
 <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 	<property name="prefix" value="/WEB-INF/views/"></property>
@@ -357,7 +365,8 @@ public class HelloView implements View{
 <bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
 	<property name="order" value="100"></property>
 </bean>
-````
+```
+
 ![](https://img-blog.csdnimg.cn/20190927225514697.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
 
 ![看完不赞，都是坏蛋](https://imgconvert.csdnimg.cn/aHR0cHM6Ly93d3cuNTJkb3V0dS5jbi9zdGF0aWMvdGVtcC9waWMvOWJkNjhkMTUwZjA3ODdjNTYwYTQzOWRhMzU5YTU4MGEucG5n?x-oss-process=image/format,png#pic_center)
@@ -365,4 +374,3 @@ public class HelloView implements View{
 > 今天的你多努力一点，明天的你就能少说一句求人的话！
 >
 > *我是小菜，一个和你一起学习的男人。* `💋`
-
