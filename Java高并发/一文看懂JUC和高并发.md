@@ -377,9 +377,9 @@ Java中的线程池使用过Excutor框架实现的，该框架中用到了`Execu
 
 #### 5）线程池工作原理
 
-![image](https://user-gold-cdn.xitu.io/2020/4/5/1714a475d8bb9142?w=526&h=393&f=png&s=135619)
+![](https://ae01.alicdn.com/kf/H767da65cb8f045fcacfd52866a3fb4b7B.jpg)
 ![image](https://user-gold-cdn.xitu.io/2020/4/5/1714a475db6ae0ce?w=571&h=372&f=png&s=63290)
-![image](https://user-gold-cdn.xitu.io/2020/4/5/1714a475dd8527eb?w=1124&h=325&f=png&s=370372)
+![](https://ae01.alicdn.com/kf/H41c61f1fe09c4f3fa7d083c09b92d94f4.jpg)
 *例子：*
 
 假设一家银行总共有六个窗口（`maximumPoolSize`），周末开了三个窗口提供业务办理（`corePoolSize`），上班期间来了3个人办理业务，三个窗口能够应付的过来，这个时候又来了1个，三个窗口便忙不过来了，，只好让新来的客户去等待区（`workQueue`）等待，接下来如果还有来客户的话便让客户去等待区（`workQueue`）等待。但是如果等待区也坐满了。业务经理（`threadFactory`）便通知剩下的窗口开启来进行业务办理，但是如果六个窗口都占满了，而且等待区也坐不下了。这个时候银行便要考虑采用什么方式（`RejectedExecutionHandler`）来拒绝客户。时间慢慢的过去了，办理业务的客户也差不多走了，只剩下3个客户在办理。这个时候空闲了3个新增的窗口，他们便开始等待（`keepAliveTime`）一定时间，如果时间到了还没有客户来办理业务的话，这3个新增窗口便可以关闭，回去休息。但是原来的三个窗口（`corePoolSize`）还得继续开着。
