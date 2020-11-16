@@ -1,11 +1,18 @@
 大家好，我是小菜，一个渴望在互联网行业做到蔡不菜的小菜。可柔可刚，点赞则柔，白嫖则刚！
 **死鬼~看完记得给我来个三连哦！**
 
+
 ![](https://user-gold-cdn.xitu.io/2020/4/11/17169c46045528af?w=240&h=224&f=jpeg&s=7529)
 
-> 本文主要介绍 `Java中的 JUC 和高并发`
-> 如有需要，可以参考
-> 如有帮助，不忘 **点赞** ❥
+
+>本文主要介绍 `并发入门`
+>
+>如有需要，可以参考
+>
+>如有帮助，不忘 **点赞** ❥
+>
+>
+>微信公众号已开启，**小菜良记**，没关注的同学们记得关注哦！
 
 ### 一、Volatile
 
@@ -22,7 +29,7 @@
 `解决（volatile）：`
 当多个线程访问同一个变量时，一个线程修改了这个变量的值，其他线程能够立即看到修改的值
 
-![](https://ae01.alicdn.com/kf/H6160adf020be43eaa148a256b9931c98j.jpg)
+![](https://cbuc.top/1604146143822.png)
 
 #### 2）不保证原子性
 
@@ -104,7 +111,7 @@ public class CASDemo{
 
 *解决*：（**时间戳原子引用：`AtomicStampedReference`**）
 
-![](https://ae01.alicdn.com/kf/H700c879ddcb0491dbd60e206a3dd9b672.jpg)
+![](https://cbuc.top/1604146185114.png)
 
 ### 三、集合类不安全问题
 
@@ -159,9 +166,9 @@ public static void main(String[] args) {
 
 `ReentrantLock 和 syschronized` 就是一个典型的可重入锁
 
-*ReentrantLock 举例*：![](https://ae01.alicdn.com/kf/H3d03dd6933194272b102b632fe309c49Q.jpg)
+***ReentrantLock** 举例*：![](https://ae01.alicdn.com/kf/H3d03dd6933194272b102b632fe309c49Q.jpg)
 
-*syschronized 举例*：![](https://ae01.alicdn.com/kf/He82fcabd6a9846b9bf10b1ab40a08887V.jpg)
+***syschronized** 举例*：![](https://ae01.alicdn.com/kf/He82fcabd6a9846b9bf10b1ab40a08887V.jpg)
 
 #### 3）自旋锁
 是指尝试获取锁的线程不会立即阻塞，而是采用**循环**的方式去尝试获取锁，这样的好处是减少线程上下文切换的消耗，缺点是循环会消耗CPU。
@@ -187,7 +194,7 @@ public final int getAndAddInt(Object var1, long var2, int var4) {
 
 *例子*：
 
-![](https://ae01.alicdn.com/kf/H225e1fe74b564b5eada660bba006ab5ef.jpg)
+![](https://cbuc.top/1604146253764.png)
 
 #### 5）CountDownLatch
 - 让一些线程阻塞直到另外一些线程完成后才别唤醒
@@ -211,7 +218,7 @@ public final int getAndAddInt(Object var1, long var2, int var4) {
 
   跟上面一样，一个班级有六个学生，要等学生都离开后班长才能关门。
 
-![](https://ae01.alicdn.com/kf/Hcae5d9a562ee432cb1378887df98f6ccE.jpg)
+![](https://cbuc.top/1604146297114.png)
 
 *CountDownLatch 和 CyclicBarrier 其实是相反的操作，一个是相减到0开始执行，一个是相加到指定值开始执行*
 
@@ -219,7 +226,7 @@ public final int getAndAddInt(Object var1, long var2, int var4) {
 - 信号量的主要用户两个目的，一个是用于**共享资源的相互排斥使用** ，另一个是用于**并发资源数的控制**。
 - 例子：抢车位问题，此时有六部车辆，但是只有三个车位的问题。
 
-![](https://ae01.alicdn.com/kf/H83961d6421ba476695882e17a827deafg.jpg)
+![](https://cbuc.top/1604146324834.png)
 
 ### 五、阻塞队列
 
@@ -260,7 +267,7 @@ public final int getAndAddInt(Object var1, long var2, int var4) {
 
 *生产者消费者模式--传统版*：
 
-![](https://ae01.alicdn.com/kf/H06e5bba9eef949b8aaade6dfd417261de.jpg)
+![](https://cbuc.top/1604146356927.png)
 
 *生产者消费者模式--阻塞队列版*：
 
@@ -456,8 +463,19 @@ Java中的线程池使用过Excutor框架实现的，该框架中用到了`Execu
 
   ![](https://user-gold-cdn.xitu.io/2020/4/5/1714a4761e446b53?w=1002&h=543&f=png&s=86313)
 
+
+
+**[END]**
+
+
+
+以上便是 **Java中高并发** 的大概知识点啦！路漫漫，小菜与你一同求索~ 
+
 ![看完不赞，都是坏蛋](https://imgconvert.csdnimg.cn/aHR0cHM6Ly93d3cuNTJkb3V0dS5jbi9zdGF0aWMvdGVtcC9waWMvOWJkNjhkMTUwZjA3ODdjNTYwYTQzOWRhMzU5YTU4MGEucG5n?x-oss-process=image/format,png#pic_center)
 
 > 今天的你多努力一点，明天的你就能少说一句求人的话！
 >
 > *我是小菜，一个和你一起学习的男人。* `💋`
+>
+>
+> 微信公众号已开启，**小菜良记**，没关注的同学们记得关注哦！

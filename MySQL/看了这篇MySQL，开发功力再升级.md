@@ -1,5 +1,9 @@
-> 本文主要介绍Mysql开发中所需的知识和面试中所必知的
-> **本文较长，分为上下篇（可收藏，勿吃尘）**
+大家好，我是小菜，一个渴望在互联网行业做到蔡不菜的小菜。可柔可刚，点赞则柔，白嫖则刚！
+**死鬼~看完记得给我来个三连哦！**
+
+![](https://user-gold-cdn.xitu.io/2020/4/11/17169c46045528af?w=240&h=224&f=jpeg&s=7529)
+
+> 本文主要介绍 `Mysql开发中所需的知识和面试中所必知的`
 > 如有需要，可以参考
 > 如有帮助，不忘 **点赞** ❥
 
@@ -12,8 +16,9 @@
 ***开始使用：***
 默认情况下，MySQL数据库没有开启慢查询日志，需要我们手动来设置这个参数。
 通过**show variables like '%slow_query_log'** 查看是否开启了慢查询日志
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200321234046255.png)
+![ ](https://img-blog.csdnimg.cn/20200321234046255.png)
 ***设置方法：***
+
 ```sql
 # 以下方式只对当前数据库有效，MySQL重启后失效
 set global slow_query_log = 1;
@@ -262,7 +267,7 @@ InnoDB也会对这个“间隙”加锁，这种锁机制就是所谓的间隙�
 - master将改变记录到二进制日志（binary log）。这些记录过程叫做二进制日志时间，binary log events
 - slave将master的binary log events拷贝到它的中继日志中（relay log）
 - slave重做中继日志中的事件，将改变应用到自己的数据库中，mysql复制是异步的且串行化的。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2020032218092156.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
+![ ](https://img-blog.csdnimg.cn/2020032218092156.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
 #### 2）复制的基本原则
 - 每个slave 只有一个master
 - 每个slave只能有一个唯一的服务器ID
@@ -332,15 +337,16 @@ flush privileges;
 show master status;
 # 记录File和Position 的值
 ```
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200322194401897.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
+![ ](https://img-blog.csdnimg.cn/20200322194401897.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
 - 执行完以上步骤便不要再操作，防止主服务器状态值发生改变
 
-**` 【在Linux从机上配置需要复制的主机】`**】
+**` 【在Linux从机上配置需要复制的主机】`**
+
 - 步骤1
 ```sql
 change master to master_host = '主机IP'，master_user='zhangsan',master_password = '123456',master_log_file='file名字',master_log_pos=position数字
 ```
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200322194859848.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ**,size_16,color_FFFFFF,t_70)
+![](https://ae01.alicdn.com/kf/H6f1fd39a448542fe9f9e15653ad28e8co.jpg)
 - 步骤2：
 启动从服务器复制功能
 ```sql

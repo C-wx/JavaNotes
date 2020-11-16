@@ -43,8 +43,8 @@ Spring从3.1开始定义了`org.springframework.cache.Cache`和`org.springframew
 - `Cache`接口下Spring提供了各种xxxCache的实现；如`RedisCache`，`EhCacheCache` ,` ConcurrentMapCache`等
 - 每次调用需要缓存功能的方法时，Spring会检查指定参数的指定的目标方法是否已经被调用过，如果有就直接从缓存中获取方法调用后的结果，如果没有就调用方法并缓存结果后返回给用户。下次调用直接从缓存中获取。
 - 使用Spring缓存抽象时我们需要关注以下两点：
-	 1. 确定方法需要被缓存以及他们的缓存策略
-	  2. 从缓存中读取之前缓存存储的数据
+  1. 确定方法需要被缓存以及他们的缓存策略
+    2. 从缓存中读取之前缓存存储的数据
 
 ![ ](https://img-blog.csdnimg.cn/20191006214835393.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
 
@@ -59,13 +59,16 @@ Spring从3.1开始定义了`org.springframework.cache.Cache`和`org.springframew
 #### 4）缓存使用
 
 + 引入`spring-boot-starter-cache`模块
+
 ```xml
 <dependency>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-starter-cache</artifactId>
 </dependency>
 ```
+
  + 利用`@EnableCaching`开启缓存
+
 ```java
 @MapperScan("cbuc.life.cache.mapper")
 @SpringBootApplication
@@ -97,9 +100,11 @@ public class Springboot01CacheApplication {
 7. `sync`：是否使用异步模式
 
 - ##### `示例`
+
   1）
   ![](https://ae01.alicdn.com/kf/H4d1ecae35c724380b30a766329a0138ad.jpg)
   *注： 我们可以自定义`keyGenerator`*
+
  ```java
 @Configuration
 public class MyCacheConfig {
@@ -114,6 +119,7 @@ public class MyCacheConfig {
     }
 }
  ```
+
 2）
 ![](https://ae01.alicdn.com/kf/H9b754af4b2054db5b5a80a792fa29272l.jpg)
 3）
@@ -124,32 +130,40 @@ public class MyCacheConfig {
 #### 6）整合redis
 
 1. 引入spring-boot-starter-data-redis
+
 ```xml
 <dependency>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-starter-data-redis</artifactId>
 </dependency>
 ```
+
 2. application.yml配置 redis 连接地址
+
 ```properties
 spring.redis.host=118.24.44.169
 ```
+
 3. 使用ReditTemplate操作redis
-	*常用方法*：
-	
-	```java
-	redisTemplate.opsForValue();	//操作字符串
-	redisTemplate.opsForHash();		//操作hash
-	redisTemplate.opsForList();		//操作list
-	redisTemplate.opsForSet();		//操作set
-	redisTemplate.opsForZSet();		//操作有序set
-	```
+   *常用方法*：
+
+   ```java
+   redisTemplate.opsForValue();	//操作字符串
+   redisTemplate.opsForHash();		//操作hash
+   redisTemplate.opsForList();		//操作list
+   redisTemplate.opsForSet();		//操作set
+   redisTemplate.opsForZSet();		//操作有序set
+   ```
+
 4. 配置缓存
-![ ](https://img-blog.csdnimg.cn/20200317145104450.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
+   ![ ](https://img-blog.csdnimg.cn/20200317145104450.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
+
 5. 自定义redisTemplate
-![ ](https://img-blog.csdnimg.cn/2020031714531068.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
+   ![ ](https://img-blog.csdnimg.cn/2020031714531068.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
+
 6. 将自定义的redisTemplate注册进RedisCacheManager
-![](https://ae01.alicdn.com/kf/He7f67278c5394145b01898869615cbe0t.jpg)
+   ![](https://ae01.alicdn.com/kf/He7f67278c5394145b01898869615cbe0t.jpg)
+
 ### 二、消息
 
 *大多应用中，可通过消息服务中间件来提升系统异步通信、扩展解耦能力 *
@@ -185,6 +199,7 @@ spring.redis.host=118.24.44.169
 - RabbitMQ是AMQP的实现
 
 ![](https://ae01.alicdn.com/kf/Hc7b75539bc284e939398a8b267634b0bg.jpg)
+
 #### Spring支持
 
 - `spring-jms`提供了对JMS的支持
@@ -192,7 +207,7 @@ spring.redis.host=118.24.44.169
  - 需要`ConnectionFactory`的实现来连接消息代理
  - 提供`JmsTemplate`、`RabbitTemplate`来发送消息
  - `@JmsListener（JMS）`、`@RabbitListener（AMQP）`注解在方法上监听消息代理发布的消息
- - `@EnableJms、`@EnableRabbit`开启支持
+ - `@EnableJms`、`@EnableRabbit`开启支持
 
 #### Spring Boot自动配置
 
@@ -207,31 +222,31 @@ RabbitMQ是一个由erlang开发的AMQP(Advanved Message Queue Protocol)的开�
 ![](https://ae01.alicdn.com/kf/H3deabdfe65034a508e83f61037a7dcdb9.jpg)
 
 - **Message：**
- 消息，消息是不具名的，它由消息头和消息体组成。消息体是不透明的，而消息头则由一系列的可选属性组成，这些属性包括`routing-key`（路由键）、`priority`（相对于其他消息的优先权）、`delivery-mode`（指出该消息可能需要持久性存储）等。
+  消息，消息是不具名的，它由消息头和消息体组成。消息体是不透明的，而消息头则由一系列的可选属性组成，这些属性包括`routing-key`（路由键）、`priority`（相对于其他消息的优先权）、`delivery-mode`（指出该消息可能需要持久性存储）等。
  - **Publisher：**
-消息的生产者，也是一个向交换器发布消息的客户端应用程序。
+   消息的生产者，也是一个向交换器发布消息的客户端应用程序。
  - **Consumer：**
-消息的消费者，表示一个从消息队列中取得消息的客户端应用程序。
+   消息的消费者，表示一个从消息队列中取得消息的客户端应用程序。
 - **Exchange：**
-交换器，用来接收生产者发送的消息并将这些消息路由给服务器中的队列。
-*不同类型的Exchange转发消息的策略有所区别*
-	+ `direct(默认)`
-	+ `fanout`
-	+ `topic`
-	+ `headers`
+  交换器，用来接收生产者发送的消息并将这些消息路由给服务器中的队列。
+  *不同类型的Exchange转发消息的策略有所区别*
+  + `direct(默认)`
+  + `fanout`
+  + `topic`
+  + `headers`
  - **Queue：**
-消息队列，用来保存消息直到发送给消费者。它是消息的容器，也是消息的终点。一个消息可投入一个或多个队列。消息一直在队列里面，等待消费者连接到这个队列将其取走。
+   消息队列，用来保存消息直到发送给消费者。它是消息的容器，也是消息的终点。一个消息可投入一个或多个队列。消息一直在队列里面，等待消费者连接到这个队列将其取走。
  - **Binding：**
-绑定，用于消息队列和交换器之间的关联。一个绑定就是基于路由键将交换器和消息队列连接起来的路由规则，所以可以将交换器理解成一个由绑定构成的路由表。
-Exchange 和Queue的绑定可以是多对多的关系。
+   绑定，用于消息队列和交换器之间的关联。一个绑定就是基于路由键将交换器和消息队列连接起来的路由规则，所以可以将交换器理解成一个由绑定构成的路由表。
+   Exchange 和Queue的绑定可以是多对多的关系。
  - **Connection：**
-网络连接，比如一个TCP连接。
+   网络连接，比如一个TCP连接。
  - **Channel：**
-信道，多路复用连接中的一条独立的双向数据流通道。信道是建立在真实的TCP连接内的虚拟连接，AMQP 命令都是通过信道发出去的，不管是发布消息、订阅队列还是接收消息，这些动作都是通过信道完成。因为对于操作系统来说建立和销毁 TCP 都是非常昂贵的开销，所以引入了信道的概念，以复用一条 TCP 连接。
+   信道，多路复用连接中的一条独立的双向数据流通道。信道是建立在真实的TCP连接内的虚拟连接，AMQP 命令都是通过信道发出去的，不管是发布消息、订阅队列还是接收消息，这些动作都是通过信道完成。因为对于操作系统来说建立和销毁 TCP 都是非常昂贵的开销，所以引入了信道的概念，以复用一条 TCP 连接。
  - **Virtual Host：**
-虚拟主机，表示一批交换器、消息队列和相关对象。虚拟主机是共享相同的身份认证和加密环境的独立服务器域。每个 vhost 本质上就是一个 mini 版的 RabbitMQ 服务器，拥有自己的队列、交换器、绑定和权限机制。vhost 是 AMQP 概念的基础，必须在连接时指定，RabbitMQ 默认的 vhost 是 / 。
+   虚拟主机，表示一批交换器、消息队列和相关对象。虚拟主机是共享相同的身份认证和加密环境的独立服务器域。每个 vhost 本质上就是一个 mini 版的 RabbitMQ 服务器，拥有自己的队列、交换器、绑定和权限机制。vhost 是 AMQP 概念的基础，必须在连接时指定，RabbitMQ 默认的 vhost 是 / 。
  - **Broker：**
-表示消息队列服务器实体
+   表示消息队列服务器实体
 
 *运行机制*：
 
@@ -245,36 +260,41 @@ Exchange 和Queue的绑定可以是多对多的关系。
 Exchange分发消息时根据类型的不同分发策略有区别，目前共四种类型：`direct`、`fanout`、`topic`、`headers` 。headers 匹配 AMQP 消息的* header 而不是路由键*， *headers 交换器和 direct 交换器完全一致*，但性能差很多，目前几乎用不到了，所以直接看另外三种类型：
 
 1. `direct`
-![ ](https://img-blog.csdnimg.cn/20191009214111633.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
- 消息中的路由键（`routing key`）如果和 `Binding` 中的 `binding key` 一致， 交换器就将消息发到对应的队列中。路由键与队列名完全匹配，如果一个队列绑定到交换机要求路由键为`“dog”`，则只转发 `routing key` 标记为“dog”的消息，不会转发`“dog.puppy”`，也不会转发`“dog.guard”`等等。它是完全匹配、单播的模式。
+   ![ ](https://img-blog.csdnimg.cn/20191009214111633.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
+    消息中的路由键（`routing key`）如果和 `Binding` 中的 `binding key` 一致， 交换器就将消息发到对应的队列中。路由键与队列名完全匹配，如果一个队列绑定到交换机要求路由键为`“dog”`，则只转发 `routing key` 标记为“dog”的消息，不会转发`“dog.puppy”`，也不会转发`“dog.guard”`等等。它是完全匹配、单播的模式。
 2. `fanout`
-![ ](https://img-blog.csdnimg.cn/20191009214215774.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
- 每个发到 fanout 类型交换器的消息都会分到所有绑定的队列上去。fanout 交换器不处理路由键，只是简单的将队列绑定到交换器上，每个发送到交换器的消息都会被转发到与该交换器绑定的所有队列上。很像子网广播，每台子网内的主机都获得了一份复制的消息。fanout 类型转发消息是最快的。
+   ![ ](https://img-blog.csdnimg.cn/20191009214215774.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
+    每个发到 fanout 类型交换器的消息都会分到所有绑定的队列上去。fanout 交换器不处理路由键，只是简单的将队列绑定到交换器上，每个发送到交换器的消息都会被转发到与该交换器绑定的所有队列上。很像子网广播，每台子网内的主机都获得了一份复制的消息。fanout 类型转发消息是最快的。
  3. `topic`
-![ ](https://img-blog.csdnimg.cn/20191009215005657.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
-topic 交换器通过模式匹配分配消息的路由键属性，将路由键和某个模式进行匹配，此时队列需要绑定到一个模式上。它将路由键和绑定键的字符串切分成单词，这些单词之间用点隔开。它同样也会识别两个通配符：符号`“#”`和符号`“*”`。#匹配0个或多个单词，*匹配一个单词。
+    ![ ](https://img-blog.csdnimg.cn/20191009215005657.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
+    topic 交换器通过模式匹配分配消息的路由键属性，将路由键和某个模式进行匹配，此时队列需要绑定到一个模式上。它将路由键和绑定键的字符串切分成单词，这些单词之间用点隔开。它同样也会识别两个通配符：符号`“#”`和符号`“*”`。\#匹配0个或多个单词，\*匹配一个单词。
 
 *整合RabbitMQ*
 
 - 引入 spring-boot-starter-amqp
+
 ```xml
 <dependency>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-starter-amqp</artifactId>
 </dependency>
 ```
+
 - application.yml配置
+
 ```properties
 spring.rabbitmq.host=118.24.44.169
 spring.rabbitmq.username=guest
 spring.rabbitmq.password=guest
 ```
+
 - 启动类
-![](https://ae01.alicdn.com/kf/H25ed15a833004ee59ed6e8f1e091fa75H.jpg)
+  ![](https://ae01.alicdn.com/kf/H25ed15a833004ee59ed6e8f1e091fa75H.jpg)
 
 *示例*：
 
 - 自定义消息转换器，以Jackson的形式转换
+
 ```java
 @Configuration
 public class MyAMQPConfig {
@@ -284,7 +304,9 @@ public class MyAMQPConfig {
     }
 }
 ```
+
 - 注入Bean
+
 ```java
 /**
   * 注入我们需要的两个bean
@@ -294,12 +316,15 @@ RabbitTemplate rabbitTemplate;
 @Autowired
 AmqpAdmin amqpAdmin;
 ```
+
 - 不同模式发送
 
 ![](https://ae01.alicdn.com/kf/Hd5fed4728d294f02b7f1bd3f529568f7X.jpg)
+
 - Service 中接收消息示例
-注意要在启动类中开启基于注解的RabbitMQ模式 ：`@EnableRabbit`
-![ ](https://img-blog.csdnimg.cn/20200317154303120.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
+  注意要在启动类中开启基于注解的RabbitMQ模式 ：`@EnableRabbit`
+  ![ ](https://img-blog.csdnimg.cn/20200317154303120.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
+
 ### 三、检索
 
 我们的应用经常需要添加检索功能，开源的 `ElasticSearch `是目前全文搜索引擎的首选。他可以快速的存储、搜索和分析海量数据。Spring Boot通过整合`Spring Data ElasticSearch`为我们提供了非常便捷的检索功能支持；
@@ -313,13 +338,13 @@ AmqpAdmin amqpAdmin;
 
 #### 类似关系：
 
-- 索引   `--->`   数据库
-
-- 类型   `--->`   表
-- 文档   `--->`   表中的记录
-- 属性   `--->`   列
+- 索引   `====`   数据库
+- 类型   `====`   表
+- 文档   `====`   表中的记录
+- 属性   `====`   列
 
 ![](https://ae01.alicdn.com/kf/H2660ffc7a7ff481dad2ee873a476531bD.jpg)
+
 #### 整合ElasticSearch
 
 *SpringBoot 默认支持两种技术来和 ES 交互*
@@ -337,10 +362,12 @@ AmqpAdmin amqpAdmin;
 ```
 
 + `SpringData ElasticSearch`
- 1. 版本适配问题
-		- 升级SpringBoot版本
-		- 安装对应版本的ES
-2. 导入工具包
+
+  1. 版本适配问题
+     - 升级SpringBoot版本
+       - 安装对应版本的ES
+ 2. 导入工具包
+
 ```xml
 <!--SpringBoot默认使用SpringData ElasticSearch模块进行操作-->
 <dependency>
@@ -348,15 +375,19 @@ AmqpAdmin amqpAdmin;
 	<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
 </dependency>
 ```
+
 3. 安装Spring Data 对应版本的ElasticSearch
 4. application.properties配置
+
 ```properties
 spring.data.elasticsearch.cluster-name=elasticsearch
 spring.data.elasticsearch.cluster-nodes=118.24.44.169:9301
 ```
+
 5. 测试
 
 - 注入Bean：
+
 ```java
 @Document(indexName = "cbuc",type = "book")
 public class Book {
@@ -375,22 +406,28 @@ public class Article {
     //省略 get/set 方法
 }
 ```
+
 - 编写 ElasticsearchRepository：
+
 ```java
 public interface BookRepository extends ElasticsearchRepository<Book,Integer> {
     //参照 https://docs.spring.io/spring-data/elasticsearch/docs/3.0.6.RELEASE/reference/html/
    public List<Book> findByBookNameLike(String bookName);
 }
 ```
+
 - 引入所需要的Bean：
+
 ```java
 @Autowired
 JestClient jestClient;
 @Autowired
 BookRepository bookRepository;
 ```
+
 `法1：`
 存入index：
+
 ```java
 Book book = new Book();
 book.setId(1);
@@ -398,13 +435,17 @@ book.setBookName("西游记");
 book.setAuthor("吴承恩");
 bookRepository.index(book);
 ```
+
 取：
+
 ```java
 for (Book book : bookRepository.findByBookNameLike("游")) {
 	System.out.println(book);
 }
 ```
+
 `法2：`
+
 ```java
 //给Es中索引（保存）一个文档：
 Article article = new Article();
@@ -417,7 +458,9 @@ Index index = new Index.Builder(article).index("cbuc").type("news").build();
 //执行
 jestClient.execute(index);
 ```
+
 测试搜索：
+
 ```java
 //查询表达式
 @Test
@@ -442,6 +485,7 @@ public void search(){
 	}
 }
 ```
+
 ### 四、任务
 
 #### 异步任务
@@ -453,7 +497,9 @@ public void search(){
 - `@Aysnc`
 
 `使用：`
+
 1. 启动类开启异步注解功能
+
 ```java
 @EnableAsync  //开启异步注解功能
 @SpringBootApplication
@@ -463,7 +509,9 @@ public class Springboot04TaskApplication {
 	}
 }
 ```
+
 2.  Service:
+
 ```java
 @Service
 public class AsyncService {
@@ -480,7 +528,9 @@ public class AsyncService {
     }
 }
 ```
+
 3. Controller:
+
 ```java
 @RestController
 public class AsyncController {
@@ -493,6 +543,7 @@ public class AsyncController {
     }
 }
 ```
+
 #### 定时任务
 
 项目开发中经常需要执行一些定时任务，比如需要在每天凌晨时候，分析一次前一天的日志信息。Spring为我们提供了异步执行任务调度的方式，提供`TaskExecutor `、`TaskScheduler `接口。
@@ -505,7 +556,9 @@ public class AsyncController {
 ![ ](https://img-blog.csdnimg.cn/20191010205056139.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
 ![ ](https://img-blog.csdnimg.cn/20191010205122349.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
 `使用：`
+
 1.  启动类开启基于注解的定时任务:
+
 ```java
 @EnableScheduling //开启基于注解的定时任务
 @SpringBootApplication
@@ -515,28 +568,35 @@ public class Springboot04TaskApplication {
 	}
 }
 ```
+
 2. Service：
-![](https://ae01.alicdn.com/kf/H2d7024275469467daaa0b946c5cb29dda.jpg)
+   ![](https://ae01.alicdn.com/kf/H2d7024275469467daaa0b946c5cb29dda.jpg)
+
 #### 邮件任务 
 
 *使用*：
 
 1. 邮件发送需要引入spring-boot-starter-mail
+
 ```xml
 <dependency>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-starter-mail</artifactId>
 </dependency>
 ```
+
 2. 定义MailProperties内容，配置在application.properties中
+
 ```properties
 spring.mail.username=（发送人qq账号）
 spring.mail.password=（发送人qq密码）
 spring.mail.host=smtp.qq.com
 spring.mail.properties.mail.smtp.ssl.enable=true
 ```
+
 3. 自动装配JavaMailSender
-![](https://ae01.alicdn.com/kf/Ha54e7c3735d64e1c8f8e85af551d1966K.jpg)
+   ![](https://ae01.alicdn.com/kf/Ha54e7c3735d64e1c8f8e85af551d1966K.jpg)
+
 ### 五、分布式系统
 
 `单一应用架构`
@@ -557,38 +617,33 @@ spring.mail.properties.mail.smtp.ssl.enable=true
 
 ![ ](https://img-blog.csdnimg.cn/20191011222837135.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzI4NzIzOQ==,size_16,color_FFFFFF,t_70)
 `使用：`
-
 - 安装zookeeper作为注册中心
-
 - 编写服务提供者
 
-  *引入dubbo和zkclient相关依赖*
-
-  ```xml
-  <dependency>
-  	<groupId>com.alibaba.boot</groupId>
-  	<artifactId>dubbo-spring-boot-starter</artifactId>
-  	<version>0.1.0</version>
-  </dependency>
+*引入dubbo和zkclient相关依赖*
+```xml
+<dependency>
+      <groupId>com.alibaba.boot</groupId>
+      <artifactId>dubbo-spring-boot-starter</artifactId>
+      <version>0.1.0</version>
+</dependency>
   
-  <!--引入zookeeper的客户端工具-->
-  <!-- https://mvnrepository.com/artifact/com.github.sgroschupf/zkclient -->
-  <dependency>
-  	<groupId>com.github.sgroschupf</groupId>
-  	<artifactId>zkclient</artifactId>
-  	<version>0.1</version>
-  </dependency>
-  ```
+<!--引入zookeeper的客户端工具-->
+<!-- https://mvnrepository.com/artifact/com.github.sgroschupf/zkclient -->
+<dependency>
+      <groupId>com.github.sgroschupf</groupId>
+      <artifactId>zkclient</artifactId>
+      <version>0.1</version>
+</dependency>
+```
   *配置dubbo的扫描包和注册中心地址*
-
-  ```properties
+```properties
   dubbo.application.name=provider-ticket
   dubbo.registry.address=zookeeper://118.24.44.169:2181
   dubbo.scan.base-packages=cbuc.life.ticket.service
-  ```
+```
   *使用@Service发布服务*
-
-  ```java
+```java
   @Component
   @Service //将服务发布出去  注意注解 Service是dubbo包下的
   public class TicketServiceImpl implements TicketService {
@@ -597,13 +652,11 @@ spring.mail.properties.mail.smtp.ssl.enable=true
           return "《我和我的祖国》";
       }
   }
-  ```
-
+```
 - 编写服务消费者
 
-  *引入dubbo和zkclient相关依赖*
-
-  ```xml
+*引入dubbo和zkclient相关依赖*
+```xml
   <dependency>
   	<groupId>com.alibaba.boot</groupId>
   	<artifactId>dubbo-spring-boot-starter</artifactId>
@@ -617,10 +670,9 @@ spring.mail.properties.mail.smtp.ssl.enable=true
   	<artifactId>zkclient</artifactId>
   	<version>0.1</version>
   </dependency>
-  ```
-  *引用服务*
-
-  ```java
+```
+*引用服务*
+```java
   @Service
   public class UserService{
       @Reference	// 使用 Reference 引入服务
@@ -630,7 +682,8 @@ spring.mail.properties.mail.smtp.ssl.enable=true
           System.out.println("调用买票服务："+ticket);
       }
   }
-  ```
+```
+
 #### Spring Boot和Spring Cloud
 
 Spring Cloud是一个分布式的整体解决方案。Spring Cloud 为开发者提供了在分布式系统（配置管理，服务发现，熔断，路由，微代理，控制总线，一次性token，全局琐，leader选举，分布式session，集群状态）中快速构建的工具，使用Spring Cloud的开发者可以快速的启动服务或构建应用、同时能够快速和云平台资源进行对接。
@@ -649,6 +702,7 @@ Spring Cloud是一个分布式的整体解决方案。Spring Cloud 为开发者�
 *使用*：
 
 - 引入Eureka注册中心
+
 ```xml
 <dependencyManagement>
 	<dependencies>
@@ -669,7 +723,9 @@ Spring Cloud是一个分布式的整体解决方案。Spring Cloud 为开发者�
 	</dependencies>
 </dependencyManagement>
 ```
+
 - 配置application
+
 ```yaml
 server:
   port: 8761
@@ -682,7 +738,9 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka/
 ```
+
 - 启动类：
+
 ```java
 @EnableEurekaServer	
 @SpringBootApplication
@@ -692,6 +750,7 @@ public class EurekaServerApplication {
 	}
 }
 ```
+
 - 创建provider
 
   *引入依赖*
@@ -716,6 +775,7 @@ public class EurekaServerApplication {
   	</dependencies>
   </dependencyManagement>
   ```
+
   *配置application*
 
   ```yaml
@@ -731,6 +791,7 @@ public class EurekaServerApplication {
       service-url:
         defaultZone: http://localhost:8761/eureka/
   ```
+
   *启动类*
 
   ```java
@@ -741,6 +802,7 @@ public class EurekaServerApplication {
   	}
   }
   ```
+
   *service*
 
   ```java
@@ -752,6 +814,7 @@ public class EurekaServerApplication {
       }
   }
   ```
+
   *controller*
 
   ```java
@@ -765,6 +828,7 @@ public class EurekaServerApplication {
       }
   }
   ```
+
 - 创建consumer
 
   *引入依赖*
@@ -789,6 +853,7 @@ public class EurekaServerApplication {
   	</dependencies>
   </dependencyManagement>
   ```
+
   *配置application*
 
   ```yaml
@@ -804,6 +869,7 @@ public class EurekaServerApplication {
       service-url:
         defaultZone: http://localhost:8761/eureka/
   ```
+
   *启动类*
 
   ```java
@@ -822,6 +888,7 @@ public class EurekaServerApplication {
   	}
   }
   ```
+
   *controller (通过使用RestTemplate调用服务)*
 
   ```java
@@ -845,4 +912,4 @@ public class EurekaServerApplication {
 >
 > *我是小菜，一个和你一起学习的男人。* `💋`
 
-![](https://pics.images.ac.cn/image/5f070d84cb906.html)
+![](https://ae01.alicdn.com/kf/Hb629ca31c8724c32ae34955d3478e139Q.jpg)

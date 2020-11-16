@@ -265,3 +265,9 @@ public ThreadPoolExecutor(int corePoolSize,
   - *CallerRunsPolicy 策略*：不会真正丢弃任务，在线程池未关闭的时候，运行当前被丢弃的任务。
   - *DiscardOldestPolicy 策略*：丢弃最老的一个任务，也就是即将被执行的一个任务，并尝试再次提交当前任务。
   - *DiscardPolicy 策略*：默默丢弃无法处理的任务，不予任何处理。
+
+![看完不赞，都是坏蛋](https://imgconvert.csdnimg.cn/aHR0cHM6Ly93d3cuNTJkb3V0dS5jbi9zdGF0aWMvdGVtcC9waWMvOWJkNjhkMTUwZjA3ODdjNTYwYTQzOWRhMzU5YTU4MGEucG5n?x-oss-process=image/format,png#pic_center)
+
+> 今天的你多努力一点，明天的你就能少说一句求人的话！
+>
+> *我是小菜，一个和你一起学习的男人。* `💋`
