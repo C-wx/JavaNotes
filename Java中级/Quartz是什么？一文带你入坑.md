@@ -133,7 +133,7 @@ String jobName = jobDetail.getJobClass().getName();
 
 **两者之间的关系：**
 
-**JobDetail** 定义的是任务数据，而真正的执行逻辑是是在 **Job** 中。这是因为任务是有可能并发执行，如果 **Scheduler** 直接使用 **Job** ，就会存在对同一个 **Job** 实例并发访问的问题。而 采用**JobDetail & Job** 方式， **Scheduler** 每次执行，都会根据 **JobDetail** 创建一个新的 **Job** 实例，这样就可以规避并发访文的问题
+**JobDetail** 定义的是任务数据，而真正的执行逻辑是是在 **Job** 中。这是因为任务是有可能并发执行，如果 **Scheduler** 直接使用 **Job** ，就会存在对同一个 **Job** 实例并发访问的问题。而 采用**JobDetail & Job** 方式， **Scheduler** 每次执行，都会根据 **JobDetail** 创建一个新的 **Job** 实例，这样就可以规避并发访的问题
 
 #### 2. JobExecutionContext
 
@@ -440,7 +440,7 @@ Trigger trigger = TriggerBuilder.newTrigger()
 
 6. `Day-of-Week`：周中的哪几天
 
-7. `Year`：年
+7. Year：年
 
 |     字段     | 是否必填 |       允许值        |     可用特殊字符     |
 | :----------: | :------: | :-----------------: | :------------------: |
@@ -452,7 +452,7 @@ Trigger trigger = TriggerBuilder.newTrigger()
 | 周中的哪几天 |    是    |   1-7 或 SUN-SAT    | **， - * / ? L C #** |
 |      年      |    否    | 不填写 或 1970-2099 |     **， - * /**     |
 
-- **特殊符号**
+- 特殊符号
 
 | 特殊符号 |                             含义                             |
 | :------: | :----------------------------------------------------------: |
