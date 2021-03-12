@@ -66,7 +66,7 @@
 
 -  ##### `JSON 对象`
 
-![源网侵删](http://www.json.org.cn/misc/object.gif)
+![源网侵删](https://gitee.com/cbuc/picture/raw/master/20210131200626.gif)
 
 ```json
 {
@@ -87,7 +87,7 @@
 
 - ##### `JSON 数组`
 
-![源网侵删](http://www.json.org.cn/misc/array.gif)
+![源网侵删](https://gitee.com/cbuc/picture/raw/master/20210131200734.gif)
 
 ```json
 ["value1","value2","value3"]
@@ -119,7 +119,7 @@
 
 - ##### `JSON 字符串`
 
-![源网侵删](http://www.json.org.cn/misc/string.gif)
+![源网侵删](https://gitee.com/cbuc/picture/raw/master/20210131200751.gif)
 
 ```json
 '{"id": "001", "name": "杨过", "sex": "男", "age": "20"}'
@@ -189,7 +189,7 @@ public class User {
 
 通过 `JSON` 自带的格式化，让输出结果看起来更加清晰，真是贴心~
 
-有小伙伴估计说到这两种我平时都用腻歪了，哪里有的着在你这，小菜一想，言之有理。那就介绍一下 `toJSONString` 的扩展用法。
+有小伙伴估计想着这两种我平时都用腻歪了，哪里有的着在你这看，小菜一想，言之有理。那就介绍一下 `toJSONString` 的扩展用法。
 
 `JSON.toJSONString(Object object, SerializerFeature... features) `
 
@@ -241,17 +241,17 @@ public class User {
 
 ![](https://gitee.com/cbuc/picture/raw/master/20210123210048.png)
 
-通过普通方式的 `toJSONString()` 方法，空值仿佛被 **吃掉** 了，这可是一个灾难！
+通过普通方式的 `toJSONString()` 方法，空值仿佛被 **吃掉** 了，这很可能会成为一个开发灾难！
 
 - `SerializerFeature.WriteClassName`
 
 序列化时写入类型信息，默认为**false**。这个方法可以在反序列化的时候用到，用法如下：
 
-![image-20210123210452475](C:/Users/Cbuc/AppData/Roaming/Typora/typora-user-images/image-20210123210452475.png)
+![](https://gitee.com/cbuc/picture/raw/master/20210131201833.png)
 
 通过这样我们可以看到我们序列化的对象是什么类型的。
 
-上面这些便是 **toJSONString** 的扩展用法，小伙伴们有没有慢慢的收获
+上面这些便是 **toJSONString** 的扩展用法，小伙伴们有没有满满的收获~
 
 > vx 搜：小菜良记
 >
@@ -296,7 +296,7 @@ public class User {
 
 通过 `FastJSON` 的反序列化，我们得到的两个对象实际上是不同的，这也很方便的实现了 **深克隆**。
 
-> 更多设计模式的了解，请移位：
+> 更多设计模式的了解，各位请移位：
 >
 > [2021还不多学几种创建型模式，创建个对象！](https://mp.weixin.qq.com/s/UPS1CMn6Q0ng3WoUa7-LJQ)
 >
@@ -314,7 +314,7 @@ public class User {
 
 ![](https://gitee.com/cbuc/picture/raw/master/20210124212155.png)
 
-这种方式有个坑就是，我们使用 `parseArray()` 这个方法的时候第二个参数需要传入我们要反序列化的对象类型，不知道你有没有为传入一个数组感到奇怪，有没有为数组里面有什么放了两个一样的`type`感到奇怪？没错！这就是这个方法的坑，我们 **List** 里面有多少个对象，	`Type[]` 这个数组里面的个数要与之匹配，不然会抛出以下错误：
+这种方式有个坑就是：我们使用 `parseArray()` 这个方法的时候第二个参数需要传入我们要反序列化的对象类型，但是我们这里需要传入的是数组，不知道你有没有为数组里放了两个一样的`type`感到奇怪？没错，这就是这个方法的坑，我们 **List** 里面有多少个对象，	`Type[]` 这个数组里面的个数要与之匹配，不然会抛出以下错误：
 
 ![](https://gitee.com/cbuc/picture/raw/master/20210124212441.png)
 
@@ -445,5 +445,15 @@ byte[] bytes = str.getBytes();
 
 ![](https://gitee.com/cbuc/picture/raw/master/20210126235334.png)
 
-通过这种方式我们针对 **age** 这个属性进行了处理，展示加上了单位.
+通过这种方式我们针对 **age** 这个属性进行了处理，给指定字段加上了单位.
 
+这篇带来的就是  **FastJSON** 的使用，希望能给各位小伙伴带来版主，路漫漫，小菜与你一同求索~
+
+![看完不赞，都是坏蛋](https://gitee.com/cbuc/picture/raw/master/20210131200108.png)
+> 今天的你多努力一点，明天的你就能少说一句求人的话！
+>
+> *我是小菜，一个和你一起学习的男人。* `💋`
+>
+> 微信公众号已开启，**小菜良记**，没关注的同学们记得关注哦！
+>
+> 每篇都是初恋的味道哦~
