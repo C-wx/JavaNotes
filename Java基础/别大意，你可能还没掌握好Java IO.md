@@ -25,8 +25,6 @@ Java IO：即 Java 输入/输出系统。大部分程序都需要处理一些输
 
 看完以上的图，才会恍然，原来 `Java.io` 包中为我们提供了这么多支持。而我们恍然的同时也不必感到惊慌，俗话说**万变不离其宗**，我们只需要根据源头进行扩展，相信就可以很好的掌握`IO`知识体系。
 
-看到这里，你能说你已经熟练地掌握 **Java IO** 了吗？如果有一丝的犹豫，那么建议请继续看下去
-
 ### File类
 
 读写操作少不了与文件（`File`）打交道，因此我们想要掌握好 `IO` 流，不妨先从文件入手。
@@ -74,9 +72,7 @@ Java IO：即 Java 输入/输出系统。大部分程序都需要处理一些输
 
 ![](https://gitee.com/cbuc/picture/raw/master/typora/20210225231755.png)
 
-图中我们已经获取到了文件集，该方法会返回的同样是一个数组，不过是一个 `File`类型的数组。同时我们顺道打印了一下各个文件的绝对路径，以证改类型是`File`类型。
-
-![](https://gitee.com/cbuc/picture/raw/master/typora/20210225232119.png)
+图中我们已经获取到了文件集，该方法会返回的同样是一个数组，不过是一个 `File`类型的数组。
 
 聪明的你肯定也已经知道了如果获取带指定关键字的文件集
 ![](https://gitee.com/cbuc/picture/raw/master/typora/20210225232318.png)
@@ -183,7 +179,7 @@ File 可以是一个文件也可以是一个文件集，文件集中可包含一
 |   PipedOutputStream   | 任何写入其中的信息都会自动作为相关 PipedInputStream 的输出，实现 **管道化** 的概念 |
 |  FilterOutputStream   | 抽象类，作为`装饰器` 的接口，为其他 OutputStream 提供有用的功能 |
 
-#### 装饰器？
+#### 装饰器
 
 我们通过以上的认识，都看到了不管是输入流还是输出流，其中都有一个抽象类`FilterInputStream` 和 `FilterOutputStream`，这些类相当于是一个装饰器。在Java 中I/O 操作需要多种不同的功能组合，而这个便是使用装饰器模式的理由所在。
 
@@ -301,3 +297,180 @@ File 可以是一个文件也可以是一个文件集，文件集中可包含一
 | BufferedOutputStream | BufferedWriter |
 |     PrintStream      |  PrintWriter   |
 
+使用**Reader** 和 **Writer** 的方式也十分简单：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210301210824.png)
+
+我们顺便看下装饰器的使用`BufferedReader` 与 `BufferedWriter`
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210301214803.png)
+
+#### RandomAccessFile
+
+**RandomAccessFile** 适用于由大小已知的记录组成的文件，所以我们可以使用 `seek()` 将记录从一处转移到另一处，然后读取或者修改记录。文件中记录的大小不一定都相同，只要我们能够确定哪些记录有多大以及它们在文件中的位置即可。
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210301211751.png)
+
+我们从图中可以看到 **RandomAccessFile** 并非继承于 `InputStream` 和 `OutputStream` 两个接口，而是继承于有些陌生的`DateInput` 和 `DataOutput`。
+
+真是个有点特立独行的类~我们继续来看下它的构造函数：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210301220712.png)
+
+我们这边只截取了构造函数的一部分，毕竟只截重点就行~
+
+观察构造器可以发现，这里定义了四种模式：
+
+|    r    | 以只读的方式打开文本，也就意味着不能用write来操作文件 |
+| :-----: | :---------------------------------------------------: |
+| **rw**  |               读操作和写操作都是允许的                |
+| **rws** |  每当进行写操作，同步的刷新到磁盘，刷新内容和元数据   |
+| **rwd** |      每当进行写操作，同步的刷新到磁盘，刷新内容       |
+
+这有什么用呢？说白了就是 `RandomAccessFile` 这个类什么都要。**既能读，又能写**
+
+从本质上来说，`RandomAccessFile` 的工作方式类似于把 **DataInputStream** 和 **DataOutputStream** 组合起来使用，还添加了一些方法，其中方法`getFilePointer()` 用于查找当前所处的文件位置，`seek()` 用于在文件内移至新的位置，`length()` 用于判断文件的最大尺寸。第二个参数用于表明我们是 **"随机读（r）"** 还是 **"既读又写（rw）"**，但它不支持单独 **写文件**。我们实际来操作一下：
+
+获取只读`RandomAccessFile`：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210301222231.png)
+
+获取可读可写`RandomAccessFile`
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210301222838.png)
+
+我们首先从向文件中写入了`test` 四个单词，然后将头指针移动3位后继续写入`File`四个单词，结果就变成了`testFile`，这是因为移动指针后是以第四个位置开始写入。
+
+#### ZIP
+
+看到`zip`这个词，我们理所应当的就会想到压缩文件，没错压缩文件在 `Java I/O`中也是极其重要的存在。也许更应该说对文件的压缩在我们的开发中也是极其重要的存在。
+
+在 **Java** 内置类中提供了需要关于`ZIP` 压缩的类，可以使用 `java.util.zip` 包中的`ZipOutuputStream` 和 `ZipInputStream` 来实现文件的 **压缩** 和 **解压缩**。我们先来看下如何对文件进行压缩~
+
+##### ZipOutputStream
+
+**ZipOutputStream** 的构造方法如下：
+
+```java
+public ZipOutputStream(OutputStream out) {/* doSomething */}
+```
+
+我们需要传入一个 `OutputStream` 对象。因此我们也大致可以认为 **压缩文件** 相当于是向一个 **压缩文件中写入数据**，听起来可能会有点绕。我们先看下`ZipOutputStream`中有哪些API：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210307134852.png)
+
+|               方法                | 返回值 |                             说明                             |
+| :-------------------------------: | :----: | :----------------------------------------------------------: |
+|     putNextEntry(ZipEntry e)      |  void  | 开始写一个新的 ZipEntry，并将流内的位置移至此 entry 所值数据的开头 |
+| write(byte[] b, int off, int len) |  void  |               将字节数组写入当前 ZIP 条目数据                |
+|    setComment(String command)     |  void  |                  设置此 ZIP 文件的注释文字                   |
+|             finish()              |  void  |  完成写入ZIP 输出流的内容，无须关闭它所配合的 OutputStream   |
+
+我们来演示一下如何压缩文件：
+
+场景：我们需要将D盘目录下的 `TestFile`文件夹压缩到 D盘下的 `test.zip` 中
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210307174531.png)
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210307150355.png)
+
+具体的操作逻辑如下：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210307151657.png)
+
+通过以上步骤我们便可以很顺利的将一个文件压缩
+
+##### ZipInputStream
+
+说完如何将文件压缩，那自然要会如何将文件解压缩！
+
+```java
+public ZipInputStream(InputStream in) {/* doSomethings */}
+```
+
+**ZipInputStream** 与压缩流类似，构造函数同样需要传入一个 `InputStream` 对象，毋庸置疑，API肯定也是一一对应的：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210307152843.png)
+
+
+
+|               方法               |  返回值  |                             说明                             |
+| :------------------------------: | :------: | :----------------------------------------------------------: |
+| read(byte[] b, int off, int len) |   int    |     读取目标 b 数组内 off 偏移量的位置，长度是 len 字节      |
+|            avaiable()            |   int    | 判断是否已读完目前 entry 所指定的数据，已读完返回 0，否则返回 1 |
+|           closeEntry()           |   void   |          关闭当前 ZIP 条目并定位流以读取下一个条目           |
+|           skip(long n)           |   long   |               跳过当前 ZIP 条目中指定的字节数                |
+|          getNextEntry()          | ZipEntry | 读取下一个ZipEntry，并将流内的位置移至该 entry 所指数据的开头 |
+|   createZipEntry(String name)    | ZipEntry |             以指定的name参数新建一个ZipEntry对象             |
+
+那下面我们便动手操作一下如何解压一个文件：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210307174814.png)
+
+不必被代码长度吓到，认真阅读便会发现解压文件也很简单：
+
+我们通过 `getNextEntry()` 方法来获取到一个`ZipEntry`，这里取到文件方式类似于深度遍历，每次返回的目录大致如下：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210307175008.png)
+
+每次都会遍历完一个目录下的所有文件，例如 `dir01` 文件夹下的所有文件，才会继续遍历 `dir02` 文件夹，所以我们不必使用递归的方式去获取所有文件。取到每一个文件后，通过 `ZipFile`获取输出流，然后写入到解压后的文件中。大致流程如下：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210307175335.png)
+
+### 新 I/O
+
+**JDK1.4的java.nio.*** 包中引入了新的 **JavaI/O** 类库，其目的也简单，就是`提高速度`。实际上，旧的I/O包已经使用 `nio` 重新实现过，以便充分利用这种速度提高。
+
+只要使用的结构更接近于操作系统执行I/O的方式，那么速度自然也会提高，因此就产生了两个概念：`通道` 和 `缓冲器`。
+
+我们该怎么理解 **通道** 和 **缓冲器** 两个概念呢。我们可以认为缓冲器相当于是一辆煤矿中的小火车，通道相当于火车的轨道，小火车载着满满的煤矿从矿源运往它处。因此我们并没有直接和通道交互，而是和缓冲器交互，并把缓冲器派送到通道。通道要么从缓冲器获得数据，要么向缓冲器发送数据。
+
+`ByteBuffer`是唯一直接与通道直接交互的缓冲器，可以存储未加工字节的缓冲器。
+
+```java
+ByteBuffer buffer = ByteBuffer.allocate(1024);
+```
+
+`ByteBuffer` 的创建方式通常可以通过`allocate()`方法来指定大小创建。同时`ByteBuffer`中支持 **4** 中创建 **ByteBuffer**
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210303215828.png)
+
+为了更好支持 **新I/O** ，**旧 I/O** 类库中有三个类被修改了，用以产生`FileChannel`。这个被修改的类分别的：`FileInputStream`，`FileOutputStream`以及用于读写兼备的 `RandomAccessFile`。这里值得注意的是这些都是字节操作流，因为字符流不能用于产生通道，但是 `Channels` 中提供了实用的方法，用于在通道中产生 **Reader** 和 **Writer**
+
+#### 获取通道
+
+我们在上面已经了解到了有三个类支持产生通道，具体产生通道的方法如下：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210303221739.png)
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210303221809.png)
+
+以上便是创建通道的三种方式，并且进行了读写操作的测试。我们看一下图中的测试代码，然后总结一下：
+
+- `getChannel()`方法将会产生一个 `FileChannel`。我们可以向它传送可用于读写的`ByteBuffer`。我们将字节存放于 `ByteBuffer` 的方法之一是：使用 `put()`方法直接对它们进行填充，填入一个或多个字节，或基本数据类型的值。不过，也可以使用 `wray()`方法将已存在的字节数组 **"包装"** 到 ByteBuffer 中。这样子就可以不用在复制底层的数组，而是把它作为所产生的 **ByteBuffer** 的存储器，可以称之为 **数组支持的ByteBuffer**
+
+- 我们还可以看到 `FileChannel` 使用到的 `position()` 方法，这个方法可以在文件内随处移动`FileChannel`，在这里，我们把它移动到最后，然后进行其他的读写操作。
+
+- 对于只读访问，我们必须显式地使用静态的`allocate()` 方法来分配 `ByteBuffer`。如果我们想要获取更好的速度我们也可以使用 `allocateDirect()` ，以产生一个与操作系统有更高耦合性的 **"直接"** 缓冲器。但是这种分配的开支会更大，并且具体实现也随操作系统的不同而不同。
+
+- 如果我们想要的调用 `read()` 来向`ByteBuffer` 存储字节，就必须调用缓冲器上的`flip()` 方法，这是用来告知 `FileChannel` ，让它准备好让别人读取字节的准备，当然，**这也是为了获取最大速度**。这里我们用 **ByteBuffer** 来接收字节后就没有继续使用缓冲器来进一步操作，如果需要继续`read()` 的话，我们就必须得调用 `clear()` 方法来为每个 `read()` 方法做准备。
+
+#### 通道相连
+
+程序员往往都是比较懒惰的，上面那种读取后再通知 `FileChannel` 的方式似乎有些麻烦。那么有没有更加简单的方法？肯定是有的，不然我也不会问是吧~ 那就是让一个通道与另外一个通道直接相连接，这就得借助特殊的方法`transferTo()` 和 `transferFrom()` 。具体使用如下：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210304205444.png)
+
+借助**方法1** 或 **方法2** 都可以成功将文件写入到 `test03.txt` 文件中
+
+**END**
+
+I/O 操作是我们日常开发中或不可缺的知识，所以这块我们也得好好掌握！
+
+![看完不赞，都是坏蛋](https://gitee.com/cbuc/picture/raw/master/typora/20210304210411.png)
+> 今天的你多努力一点，明天的你就能少说一句求人的话！
+>
+> *我是小菜，一个和你一起学习的男人。* `💋`
+>
+>
+> 微信公众号已开启，**小菜良记**，没关注的同学们记得关注哦！
