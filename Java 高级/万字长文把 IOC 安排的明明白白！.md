@@ -288,6 +288,8 @@ private Map<String, String> animalMap;
 
 ##### ② 注解方式
 
+###### 1. @Configuration
+
 通过注解的方式创建**Bean**，我们需要用到两个注解`@Configuration`和 `@Bean`，用法如下：
 
 创建一个`BeanConfig` 的配置类，然后通过 `AnnotationConfigApplicationContext` 获取该类
@@ -296,7 +298,7 @@ private Map<String, String> animalMap;
 
 这种方法就很美滋滋，去取了 **XML**文件的配置，感觉方便了不少，嘴角也露出迷人的微笑。
 
-注解的方式简单而强大， 让人不胜向往！接下来欢迎你来到注解新天地，导游小菜~
+注解的方式简单而强大， 让人不胜向往！接下来欢迎来到注解新天地，导游小菜~
 
 ![](https://gitee.com/cbuc/picture/raw/master/typora/20210314223726.gif)
 
@@ -318,6 +320,10 @@ public class BeanConfig {
 }
 ```
 
+
+
+###### 2. @ComponentScan
+
 但是如果一两个 Bean，我们这样子做还可以接受，当 Bean 的数量多起来估计又会抱怨了~
 
 解决方法又来了，那就是 **包扫描**，何为 **包扫描**？那就是我们扫描指定包下的实体类，然后将其注册到Spring容器中，这个方法实在是秒啊~那如何实现呢？借助`@ComponentScan`注解：
@@ -326,25 +332,112 @@ public class BeanConfig {
 
 该有的注解`@ComponentScan`有了，但是好像还有个陌生的注解 `@Component` 。其实这里不止可以用 `@Component` 还可以用 **@Controller、@Repository、@Service ... ** 这些注解，这些注解的共同点就是把标记了这些注解的类纳入Spring容器中进行管理。但是单单标记这些注解还不够，还需要我们上面说的 `@ComponentScan` 这个注解的配合，它告诉Spring 哪个packages下用注解标识的类会被spring自动扫描并且装入bean容器。
 
+`ComponentScan`是个强大的注解，我们一起看下这个注解里面有哪些属性：
 
+- **basePackages** ：指明要扫描的包
 
+- **excludeFilters = Filter[] **：指明扫描的时候按照什么规则来排除其他组件
+- **includeFilters = Filter[]**：指明扫描的时候按照什么规则来只获取需要的组件
 
+![](https://gitee.com/cbuc/picture/raw/master/20210315101333.png)
 
+从上图中我们可以看到这个注解的简单用法，我们想要的结果是注入`cbuc.life.ioc` 包下的使用注解`@Component` 标注的类，如果使用`@Controller` 注解标注的类，则不注入。
 
+在`Filter` 中我们还看到一个枚举类：**FilterType**，里面有这些属性：
 
+- **FilterType.ANNOTATION**l：按照注解
+- **FilterType.ASSIGNABLE_TYPE** ：按照给定的类型
 
+- **FilterType.ASPECTJ**：按照 ASPECTJ 表达式
+- **FilterType.REGEX**：按照正则表达式
+- **FilterType.GUSTOM**：按照自定义规则
 
+这里我们重点认识下 **FilterType.GUSTOM** 这个过滤定义规则，它支持我们自定义过滤规则，自定的规则类需要实现`TypeFilter`：
 
+![](https://gitee.com/cbuc/picture/raw/master/20210315124218.png)
 
+![](https://gitee.com/cbuc/picture/raw/master/20210315124310.png)
 
+![image-20210315124345789](https://gitee.com/cbuc/picture/raw/master/20210315124345.png)
 
+通过这个我们自定义的规则， 可以完美的将 Person 这个类放入Spring容器中，而 UserController 这个类却没有放置。
 
+如果我们需要定义多个 `@ComponentScan` ，我们可以借助`@ComponentScans` 将它们组合起来：
 
+```java
+@ComponentScans(value = {@ComponentScan(),@ComponentScan()})
+```
 
+###### 3. @Scope & @Lazy
 
+我们在 `User` 对象的构造函数中写上这样一行代码，表示被使用的时候，会提示我们它被创建了：
 
+```java
+public User() {
+    System.out.println("User 对象被创建了");
+}
+```
 
+ 当我们在代码中使用它的时候：
 
+```java
+@Configuration
+@ComponentScan(basePackages = "cbuc.life.ioc")
+public class BeanConfig {
+    @Bean
+    public User getUser() {
+        User user = new User();
+        user.setName("小菜");
+        user.setAge(23);
+        user.setSalary(2000);
+        return user;
+    }
+
+    public static void main(String[] args) {
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(BeanConfig.class);
+    }
+}
+```
+
+这个时候我们在控制台看到的内容是这样的：
+
+![](https://gitee.com/cbuc/picture/raw/master/20210315125529.png)
+
+这说明了什么？说明了IOC容器启动后会调用方法创建对象放到IOC容器中，以后每次获取都是直接从容器中拿。那么相当于在程序的整个生命周期中，每个地方用到的 Bean 都是同一个！这种称为单例模式。单例模式的好处相信大家也不陌生，最显而易见的有点便是节约了系统资源，不需要频繁创建爱你和销毁对象。但是有些情况下我们不想要单例模式，那种时候，Spring当然也支持你修改Bean的作用域！那就是借助 `@Scope` 注解。我们先知道一下Spring中存在几种Bean的作用域，才能更好的切换~
+
+- **singleton**：bean在每个SpringIOC容器中都只有一个实例 （默认作用域）
+- **protorype**：一个bean的定义可以有多个实例
+- **request**：：每次 http 请求都会创建一个 bean。该作用域仅在基于web的Spring ApplicationContext 情形下有效
+- **session**：在一个 http session 中，一个bean定义对应一个示例。该作用域仅在基于web的SpringApplicationContext 情形下有效
+- **global-session**：在一个全局的 http session 中，一个bean定义对应一个示例。该作用域仅在基于web的SpringApplicationContext情形下有效
+
+存在了5中作用域，如果我们想要切换作用域，那么只需要在@Scope上指明即可：
+
+![](https://gitee.com/cbuc/picture/raw/master/20210315130721.png)
+
+使用了`prototype`这种方式，IOC容器启动的时候不会创建对象，只用当使用到的时候才会创建对象
+
+在单例中，有一种懒汉式加载，这里当然也是支持的，只需一个`@Lazy`注解
+
+![](https://gitee.com/cbuc/picture/raw/master/20210315131026.png)
+
+这样子尽管使用的单例模式，但是IOC容器启动时也不会创建对象，只有需要的时候才会创建
+
+###### 4. @Conditional
+
+**condition** 的意思是条件，那么这个注解的用处便是 **按照一定的条件进行判断，满足条件后再给容器中注册Bean**
+
+这里简单写个例子，
+
+`MyCondition`：
+
+![](https://gitee.com/cbuc/picture/raw/master/20210315131919.png)
+
+`使用`：
+
+![](https://gitee.com/cbuc/picture/raw/master/20210315132020.png)
+
+通过这种方式，如果是windows操作系统则注入User对象，反之不注入。
 
 
 
