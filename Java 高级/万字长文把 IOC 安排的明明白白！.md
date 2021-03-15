@@ -439,29 +439,59 @@ public class BeanConfig {
 
 通过这种方式，如果是windows操作系统则注入User对象，反之不注入。
 
+###### 5. @Import
+
+我们回顾一下给容器中注册组件的几种方式，闭眼想一想~ 好了，小菜来给你复习一下：
+
+- 包扫描+组件标注注解 （@Controller 、@Service、@Repository 、@Component）
+
+- 在配置类中通过 @Bean 注册
+
+除了上面的两种，我知道你是难以满足的，那么就再来一种！那就是`@Import`的方式
+
+使用方式有三种，下面我们一一介绍：
+
+1）@Import(要导入到容器中的组件)
+
+![image-20210315231502362](https://gitee.com/cbuc/picture/raw/master/typora/20210315231502.png)
+
+2）ImportSelector(返回需要导入的组件的全类名数组)
+
+我们需要编写自定义的 **ImportSelector** ：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210315231330.png)
+
+然后在`@Import`  注解中引入：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210315231442.png)
+
+3）ImportBeanDefinitionRegistrar(手动注册bean到容器中)
+
+这个类就比较有意思，有些因果的味道~同样的我们需要自定义 **ImportBeanDefinitionRegistrar**
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210315231958.png)
+
+然后在`@Import`  注解中引入：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210315232112.png)
+
+通过上面3种`@Import`的用法，是否意识到了Spring的强大，它仿佛处处为我们着想，我们想要的不想要的，它全都有！
+
+别急！还有~
+
+###### 6. @Value
+
+这个注解是给参数赋值的，用几种比较强大的用法：
+
+- 基本数值赋值
+- 支持 SPEL 写法
+- 可以用 `${}`  取出配置文件中的值
 
 
 
+###### 7. @Autowired
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+###### 8. @Profile
 
 #### ㈡ IOC 容器
 
