@@ -320,8 +320,6 @@ public class BeanConfig {
 }
 ```
 
-
-
 ###### 2. @ComponentScan
 
 但是如果一两个 Bean，我们这样子做还可以接受，当 Bean 的数量多起来估计又会抱怨了~
@@ -487,11 +485,72 @@ public class BeanConfig {
 - 支持 SPEL 写法
 - 可以用 `${}`  取出配置文件中的值
 
+![](https://gitee.com/cbuc/picture/raw/master/20210316124124.png)
 
+###### 7. @Autowired & @Qualifier
 
-###### 7. @Autowired
+此注解用于bean的field、setter方法以及构造方法上，显式地声明依赖。
+
+默认优先按照类型去容器中找对应的组件：`applicationContext.getBean(User.class)`，如果找到多个相同类型的组件，就会将属性的名称作为组件的ID再去容器中查找：`applicationContext.getBean("user")`，我们也可以使用 `@Qualifier` 来指定装配组件的ID，而不是使用属性名：
+
+![](https://gitee.com/cbuc/picture/raw/master/20210316124559.png)
+
+`@Autowired` 自动装配的时候默认一定要将属性赋好值，否则就会报错。不过我们可以使用`required = false` 让自动装配允许使用空装配：
+
+```java
+@Autowired(required = false)
+@Qualifier("userController")
+private UserController userController;
+```
+
+用于 **Field** 上：
+
+```java
+@Component
+class Book{
+    @Autowired
+    private Address address;
+}
+```
+
+用于 **setter()**方法上：
+
+```java
+@Component
+class Book{
+    private Address address;
+
+    @Autowired
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+}
+```
+
+用于**构造函数**上：
+
+```java
+@Component
+class Book{
+    private Address address;
+
+    public Book(Address address) {
+        this.address = address;
+    }
+}
+```
+
+这种方式需要注意的是一个类中只允许有一个构造方法使用此注解。此外，在Spring4.3之后，如果一个类仅仅只有一个构造方法， 那么即使不使用此注解，Spring也会自动注入相关的Bean
 
 ###### 8. @Profile
+
+Spring 为我们提供`@Profile`，可以指定组件在哪个环境的情况下才能被注册到容器中
+
+1. 加了环境标识的bean，只有这个环境被激活的时候才能注册到容器中。默认是default环境
+2. 写在配置类上，只有是指定的环境的时候，整个配置类里面的所有配置才能开始生效
+3. 没有标注环境标识的bean,在任何环境下都是加载的
+
+![](https://gitee.com/cbuc/picture/raw/master/20210316125704.webp)
 
 #### ㈡ IOC 容器
 
@@ -615,15 +674,19 @@ IOC或依赖注入把应用的代码降到最低，它使应用更加容易测�
 > ApplicationContext 的通常实现是什么?
 
 - **FileSystemXmlApplicationContext**：此容器从一个 XML 文件中加载 bean 的定义，我们需要提供Bean配置文件的全路径名给它的构造函数
-
 - **ClassPathXmlApplicationContext**：此容器也从一个XML文件中加载beans的定义，这里，你需要正确设置classpath因为这个容器将在classpath里找bean配置
 - **WebXmlApplicationContext**：此容器加载一个XML文件，此文件定义了一个WEB应用的所有bean
 
+**END**
 
+关于Spring中的IOC相关知识就到这里结束啦，不知道小伙伴们看的过不过瘾。不过瘾的小伙伴赶紧关注点起来，下一篇AOP给你安排上！
 
+路漫漫，小菜与你一同求索！
 
-
-
-
-byName 和 byType 
-
+![看完不赞，都是坏蛋](https://gitee.com/cbuc/picture/raw/master/20210316125804.png)
+> 今天的你多努力一点，明天的你就能少说一句求人的话！
+>
+> *我是小菜，一个和你一起学习的男人。* `💋`
+>
+>
+> 微信公众号已开启，**小菜良记**，没关注的同学们记得关注哦！
