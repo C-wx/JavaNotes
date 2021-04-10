@@ -559,7 +559,7 @@ nginx        NodePort    10.110.224.214   <none>        80:31771/TCP   5s
 
 以上便是 **k8s** 集群的搭建过程，有了 **k8s** 的环境，你还怕学不会 **k8s** 的使用吗！在自己的虚拟机上尽情折腾，弄坏了也就一个恢复快照的事~ 我是小菜，路漫漫，与你一同求索！
 
-![看完不赞，都是坏蛋](https://gitee.com/cbuc/picture/raw/master/typora/20210410183903.png)
+![看完不赞，都是坏蛋](https://gitee.com/cbuc/picture/raw/master/typora/20210410232040.png)
 
 > 今天的你多努力一点，明天的你就能少说一句求人的话！
 >
