@@ -1,8 +1,7 @@
 大家好，欢迎来到小菜个人 **solo** 学堂。在这里，知识免费，不吝吸收！关注免费，不吝动手！
 **死鬼~看完记得给我来个三连哦！**
 
-
-![](https://gitee.com/cbuc/picture/raw/master/17169c46045528af)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210411110735.jpg)
 
 
 >本文主要介绍 `kubernetes集群的搭建`
@@ -117,21 +116,21 @@
 
 - 兼容性一般向下兼容
 
-![](https://gitee.com/cbuc/picture/raw/master/typora/20210410231559.png)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210411173256.png)
 
 - 选择我们下载好的 **centos** 镜像
 
-![](https://gitee.com/cbuc/picture/raw/master/typora/20210410231559.png)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210411173244.png)
 
 - 给自己的虚拟机分配名称和安装地址，我们需要安装三台，所以名称我这里分别命名为（master、node01、node02）
 
-![](https://gitee.com/cbuc/picture/raw/master/typora/20210410231559.png)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210411173335.png)
 
 - 给自己的虚拟机分配资源，最低要求一般是 2核2G内存
 
-![](https://gitee.com/cbuc/picture/raw/master/typora/20210410231559.png)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210411173356.png)
 
-![](https://gitee.com/cbuc/picture/raw/master/typora/20210410231559.png)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210411173407.png)
 
 - 这里使用 **NAT** 网络类型
 
@@ -141,7 +140,7 @@
 >
 > 仅主机：虚拟机与宿主机直接连起来
 
-![](https://gitee.com/cbuc/picture/raw/master/typora/20210410231559.png)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210411173416.png)
 
 - 接下来一直下一步，然后点击完成即可
 
