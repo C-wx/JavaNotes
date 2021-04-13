@@ -171,7 +171,7 @@
 
 - 过一会便会看到让我们选择语言的界面，这里选择中文并继续
 
-![](https://gitee.com/cbuc/picture/raw/master/typora/20210410200137.png)
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210412151149523.png)
 
 - 软件选择我们可以选`基础设施服务器`，安装位置可选 `自动分区`
 
