@@ -1,8 +1,7 @@
 大家好，欢迎来到小菜个人 **solo** 学堂。在这里，知识免费，不吝吸收！关注免费，不吝动手！
 **死鬼~看完记得给我来个三连哦！**
 
-
-![](https://gitee.com/cbuc/picture/raw/master/17169c46045528af)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210411110735.jpg)
 
 
 >本文主要介绍 `kubernetes集群的搭建`
