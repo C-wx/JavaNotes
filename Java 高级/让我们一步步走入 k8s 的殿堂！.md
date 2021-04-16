@@ -464,3 +464,123 @@ kubectl get pod -n cbuc_test
  在使用 **docker** 的时候，我们清楚程序要运行就必须部署在容器中，而在 k8s 中，我们容器必须存在与 pod 中，**pod** 就可以认为是容器的封装，一个 **pod** 可以存在一个或多个容器。
 
 ![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210414133057406.png)
+
+##### ㈠ Pod 概念
+
+###### ① pod 特性
+
+**1. 资源共享**
+
+在一个**pod** 中，多个容器之间可以共享存储和网络，相当于一个逻辑意义上的主机。
+
+**2.  生命周期短暂**
+
+pod 是一个具有生命周期的组件，如果 **pod** 所在的节点发生故障，那么该节点上的**pod** 都会被调度到其他节点上，而调度后的**pod**是一个全新的 **pod**，与之前没有任何关系。
+
+**3. 平坦的网络 **
+
+k8s 集群中的所有 **pod** 都在同一个网络地址空间中，也就是说每个 **pod** 都可以通过其他 pod 的IP地址来实现访问
+
+###### ② pod 分类
+
+- **普通 pod**
+
+这种就是我们日常中经常用到的。一旦被创建就会放入 **etcd** 中存储，接着就会被调度到任一节点上运行，当 Pod 里某个容器停止时，Kubernetes 会自动检测到这个问题并且重新启动这个 Pod 里某所有容器， 如果 Pod 所在的 Node 宕机，则会将这个 Node 上的所有 Pod 重新调度到其它节点上。
+
+- **静态 pod**
+
+静态pod是由 **kubelet** 激进型管理的仅存在于特定 **node** 节点上的，它们不能通过 **API server** 进行管理，无法与 **controller 控制器** 进行管理，并且 **kubelet** 也无法对其进行健康检测。
+
+###### ③ pod 声明周期
+
+pod中有 5 中生命周期，我们都需要了解一下~
+
+| 状态名称  |                             描述                             |
+| :-------: | :----------------------------------------------------------: |
+|  Pending  | API Server已经创建了 pod，但 pod 中的一个或多个容器的镜像还没有创建，包括镜像下载过程 |
+|  Running  | Pod 内所有容器都已创建，且至少一个容器处于运行状态，正在启动状态或正在重启状态 |
+| Completed |          Pod 内所有容器均成功执行退出，且不会再重启          |
+|  Failed   |        Pod 内所有容器都已退出，但至少一个容器退出失败        |
+|  Unknown  |         由于某种原因无法获取 Pod 状态，例如网络不通          |
+
+###### ④ pod重启策略
+
+| 策略名称  |                           描述                           |
+| :-------: | :------------------------------------------------------: |
+|  Always   |         当容器失效时，有 kubelet 自动重启该容器          |
+| OnFailure | 当容器停止运行且退出码不为0时，由 kubelet 自动重启该容器 |
+|   Never   |      不论容器运行状态如何，kubelet 都不会重启该容器      |
+
+###### ⑤ pod 资源配置
+
+之前在 **docker** 我们有进行测试没有对 **docker** 资源进行限额的时候，运行一个 **elasticSearch** 镜像的时候服务器直接卡死。那么在 **docker** 能做到资源限额，**pod** 自然也可以。
+
+**Kubernetes** 中可以设置限额的计算资源有 **CPU** 和 **Memory** 两种。**Kubernetes** 我们想要进行配额限定需要设定两个参数：`Request` 和 `Limits` 
+
+- **Request**：表示该资源最小的申请量，系统必须满足要求
+- **Limits**：表示该资源最大允许使用量，不能超出这个量，当容器试图使用超过这个量的资源时，就会被 **Kubernetes** kill 掉并重启
+
+```shell
+spec:
+  containers:
+  - name: test01
+    image: nginx:1.19.0
+    resources: 
+      limits: 
+        cpu: "500m"
+        memory: "128Mi"
+      request:
+        cpu: "250m"
+        memory: "64Mi"
+```
+
+上面表示一个 **nginx** 容器最少需要 0.25个CPU和 64 MB内存，最多只能使用  0.5个CPU和 128 MB内存。
+
+##### ㈡ pod 使用
+
+我们先来看一份 **pod** 资源清单：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210416133540276.png)
+
+这份清单大部分看起来会比较陌生，但是有部分关键属性我们在上面已经讲过了，当我们实际要用的时候如果记不起那么多我们可以使用指令 `kubectl explain pod.xxx`  的方式来查看每个属性的含义，例如
+
+//TODO
+
+```shell
+kubectl explain pod.spec
+```
+
+###### ① 简单创建
+
+我们如果想要创建一个 pod ，只需要简单准备一份 **test.yml** 文件即可：
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginxPod
+  namespace: cbuc-test
+spec: 
+  containsers:
+  - name: nginx
+    image: nginx:1.19.0
+  - name: java
+    image: java:1.8
+```
+
+然后通过 **命令式对象配置** 的指令 `kubectl create -f test.yml` 就可以获取到一个 nginx **pod**。这只是一个简单的pod 配置，我们在里面声明了两个容器：`nginx` 和 `java`。通过指令`kubectl get pod -n cbuc-test` 查看当前 **pod** 的状态。
+
+###### ② 属性说明
+
+上面我们已经成功的创建了一个 pod，但是这只是一个简单的 pod 配置，我们可以针对该 **yaml** 文件展开扩展~
+
+**1. imagePullPolicy**
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210416175253118.png)
+
+这个属性用来设置镜像拉取策略，在 k8s 中支持三种镜像拉取策略：
+
+- **Always：** 总是从远程仓库拉取镜像
+- **IfNotPresent：** 本地有则使用本地镜像，本地没有则从远程仓库拉取镜像
+- **Never：** 只使用本地镜像，从不去远程仓库拉取，本地如果不存在就会报错
+
