@@ -16,7 +16,7 @@
 
 上篇文章我们说到如何搭建 **k8s** 集群，不知道看完的小伙伴有没有自己去尝试一下呢！
 
-[不要让贫穷扼杀了你学 k8s 的兴趣]()
+[不要让贫穷扼杀了你学 k8s 的兴趣](https://mp.weixin.qq.com/s/iQXX6Xm4SKJkTCKRN0qDzA)
 
 这篇我们本着善始善终的原则，一文教会你如何使用 k8s ，成为别人家的程序员~
 
@@ -191,29 +191,30 @@ kubectl [command] [TYPE] [NAME] [flags]
 
 我们通过一些简单的例子来简单的认识一下这个命令工具：
 
-// TODO
-
 ```shell
 # 创建一个namespace
 [root@master ~]# kubectl create namespace dev
 namespace/dev created
 # 获取namespace
-[root@master ~]# kubectl get ns
-NAME STATUS AGE
-default Active 21h
-dev Active 21s
-kube-node-lease Active 21h
-kube-public Active 21h
-kube-system Active 21h
+[root@master ~]# kubectl get namespace
+NAME              STATUS   AGE
+aaa-test          Active   3m26s
+cbuc              Active   2d
+cbuc-ns           Active   5m36s
+cbuc-test         Active   11d
+default           Active   11d
+dev               Active   7s
+kube-node-lease   Active   11d
+kube-public       Active   11d
+kube-system       Active   11d
 # 在此namespace下创建并运行一个nginx的Pod
 [root@master ~]# kubectl run pod --image=nginx -n dev
-kubectl run --generator=deployment/apps.v1 is DEPRECATED and will be removed in a
-future version. Use kubectl run --generator=run-pod/v1 or kubectl create instead.
+kubectl run --generator=deployment/apps.v1 is DEPRECATED and will be removed in a future version. Use kubectl run --generator=run-pod/v1 or kubectl create instead.
 deployment.apps/pod created
 # 查看新创建的pod
 [root@master ~]# kubectl get pod -n dev
-NAME READY STATUS RESTARTS AGE
-pod-864f9875b9-pcw7x 1/1 Running 0 21s
+NAME                  READY  STATUS   RESTARTS   AGE
+pod-864f9875b9-pcw7x   1/1   Running      0      21s
 # 删除指定的pod
 [root@master ~]# kubectl delete pod pod-864f9875b9-pcw7x
 pod "pod-864f9875b9-pcw7x" deleted
@@ -346,9 +347,9 @@ status: <Object>
 
 ```shell
 apiVersion: v1
-kind: NameSpace
+kind: Namespace
 metadata:
-  name: cbuc_ns
+  name: cbuc-ns
   
 # 此处三个 - 表示分隔多个配置文件
 ---
@@ -357,6 +358,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: nginx-pod
+  namespace: cbuc-ns
 spec:
   containers:
   - name: nginx01
@@ -366,10 +368,10 @@ spec:
 然后我们可以通过 **命令式对象配置** 的方式创建出一个 pod：
 
 ```shell
-kubectl create -f n test.yaml
+kubectl create -f test.yaml
 ```
 
-// TODO
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210418224617.png)
 
 #### 4）声明式对象配置
 
@@ -387,9 +389,11 @@ kubectl apply -f test.yaml
 kubectl apply -f tset.yaml
 ```
 
-可以发现是没什么改动的，但是如果我们使用的是 `create` 来重复执行两遍呢？
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210418224805.png)
 
-//todo
+可以发现是没什么改动的，但是如果我们使用的是 `create` 来重复执行两遍呢？结果是`报错`了
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210418224912.png)
 
 那么我们不难猜出 `apply`  这个命令就是对 `create` 和 `patch` 这两个命令的结合：
 
@@ -410,26 +414,30 @@ kubectl apply -f tset.yaml
 
 在集群内部有个默认的**Namespace - `default`** ，我们创建资源的时候如果不指定 **namespace**，那么就会将该资源分配到该 **default** 的命名空间之下。
 
-// TODO  kubectl get namespace
+```shell
+[root@master test]# kubectl get namespace
+```
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210418225024.png)
 
 创建 **Namespace** 的方式也很简单，通过以下指令便可创建：
 
-// TODO
-
 ```shell
-kubectl create ns cbuc_test
+[root@master test]# kubectl create namespace aaa-test
 ```
 
- 这样子，我们就获得了一个名称为 **cbuc_test** 的命名空间。或者我们也可以通过 **命令式对象配置** 的方式创建，先准备一个 **yaml** 文件：
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210418225252.png)
+
+ 这样子，我们就获得了一个名称为 **aaa-test** 的命名空间。或者我们也可以通过 **命令式对象配置** 的方式创建，先准备一个 **yaml** 文件：
 
 ```yaml
 apiVersion: v1
 kind: Namespace # yaml文件中大小写敏感
 metadata：
-  name：cbuc_test
+  name：aaa-test
 ```
 
-然后执行`kubectl create -f namespace.yml`， 这样子我们同样也可以获得一个名称为 **cbuc_test** 的命名空间。
+然后执行`kubectl create -f namespace.yml`， 这样子我们同样也可以获得一个名称为 **aaa-test** 的命名空间。
 
 然后我们就可以在资源创建的时候使用了：
 
@@ -438,20 +446,16 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: test-pod
-  namespace: cbuc_test
+  namespace: aaa-test
 spec:
-  contains:
+  containers:
   - image: nginx:1.19.0
     name: nginx01
 ```
 
 然后执行 `kubectl create -f nginx.yml`，这样子我们就可以获取到一个 **pod** 资源，只有通过指定命名空间才能查看到我们的pod资源，这说明对其他用户是隔离的：
 
-// TODO
-
-```shell
-kubectl get pod -n cbuc_test  
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210418225808.png)
 
 如果我们想删除命名空间的话，可以使用指令：`kubectl delete -f namespace.yml`  或 `kubectl delete ns ns名称`
 
@@ -544,11 +548,7 @@ spec:
 
 这份清单大部分看起来会比较陌生，但是有部分关键属性我们在上面已经讲过了，当我们实际要用的时候如果记不起那么多我们可以使用指令 `kubectl explain pod.xxx`  的方式来查看每个属性的含义，例如
 
-//TODO
-
-```shell
-kubectl explain pod.spec
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210418225352.png)
 
 ###### ① 简单创建
 
