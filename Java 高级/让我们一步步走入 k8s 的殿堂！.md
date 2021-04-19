@@ -570,6 +570,16 @@ spec:
 
 然后通过 **命令式对象配置** 的指令 `kubectl create -f test.yml` 就可以获取到一个 nginx **pod**。这只是一个简单的pod 配置，我们在里面声明了两个容器：`nginx` 和 `java`。通过指令`kubectl get pod -n cbuc-test` 查看当前 **pod** 的状态。
 
+docker 可以用 `docker exec -it` 进入容器，k8s 也是类似此命令：
+
+```shell
+kubectl exec -it pod名称 -n 命名空间 bash
+```
+
+通过以上命令就可以进入到我们的pod中
+
+// todo
+
 ###### ② 属性说明
 
 上面我们已经成功的创建了一个 pod，但是这只是一个简单的 pod 配置，我们可以针对该 **yaml** 文件展开扩展~
@@ -583,4 +593,157 @@ spec:
 - **Always：** 总是从远程仓库拉取镜像
 - **IfNotPresent：** 本地有则使用本地镜像，本地没有则从远程仓库拉取镜像
 - **Never：** 只使用本地镜像，从不去远程仓库拉取，本地如果不存在就会报错
+
+> 注意：
+>
+> 如果镜像号为指定版本号，则默认策略为 ：IfNotPresent
+>
+> 如果镜像号为 latest ，则默认策略为： Always
+
+**2. command**
+
+command 是用于在 pod 中的容器初始化完毕之后运行一个命令。
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-command
+  namespace: aaa-test
+spec:
+  containers:
+  - name: centos
+    image: centos:7.0
+    command: ["/bin/sh","-c","touch /mnt/test.txt;while true;do /bin/echo $(date +%T) >> /mnt/test.txt; sleep 3; done;"]
+```
+
+我们在上面创建了一个 centos的pod，然后在pod初始化完成后，便会执行 command 中的命令，我们可以通过 `kubectl exec -it pod名称 -n 命名空间 bash` 然后进入到 `/mnt/test.txt`
+
+或者我们可以在pod外部执行命令：
+
+// todo
+
+```shell
+kubectl exec -it pod名称 -n 命名空间 -c centos /bin/sh / # tail -f /mnt/test.txt
+```
+
+**3. args** 
+
+我们上面说到的 command 已经可以完成启动命令和传递参数的功能，但是我们 k8s 中还提供了一个 `args` 选项，用于传递参数。k8s 中使用 command 和 args 两个参数可以实现覆盖 Dockerfile 中的 **ENTRYPOINE** 的功能。
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-command
+  namespace: aaa-test
+spec:
+  containers:
+  - name: centos
+    image: centos:7.0
+    command: ["/bin/sh"]
+    args: ["-c","touch /mnt/test.txt;while true;do /bin/echo $(date +%T) >> /mnt/test.txt; sleep 3; done;"]
+```
+
+`注意:`
+
+1. 如果 command 和 args 均没有写，那么是使用 Dockerfile 的配置
+2. 如果 command 写了，args 没有写，那么 Dockerfile 默认的配置会被忽略，执行输入的 command
+3. 如果 command 没写，args 写了， 那么 Dockerfile 中配置的 ENTRYPOINT 的命令会被执行，使用当前 args 的参数
+4. 如果 command 和 arg 都写了，那么 Dockerfile 的配置就会被忽略，执行 command 命令加上 args 参数
+
+**4. env**
+
+用于在 pod 中的容器设置环境变量
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-command
+  namespace: aaa-test
+spec:
+  containers:
+  - name: centos
+    image: centos:7.0
+    env:
+    - name: "username"
+      value: "cbuc"
+    command: ["/bin/sh", "-c", "/bin/echo $username >> /mnt/test.txt;"]
+```
+
+执行命令查看：
+
+//todo
+
+```shell
+kubectl exec -it pod名称 -n 命名空间 -c centos /bin/sh / # tail -f /mnt/test.txt
+```
+
+**5. ports**
+
+ports 在 k8s 的属性类型是 Object，我们可以通过 `kubectl explain pod.spec.containers.ports` 查看该对象下的属性：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210419140751013.png)
+
+我们从图中可以发现该对象由5个属性：
+
+- **containerPort：** 容器要监听的端口（0~65536）
+- **hostIP：** 要将外部端口绑定到主机IP（一般省略）
+
+- **hostPort：** 容器要在主机上公开的端口，如果设置，主机上只能运行容器的一个副本（一般省略）
+
+- **name：** 端口名称，如果指定，必须保证name 在pod中是唯一的
+- **protocol：** 端口协议，必须是 UDP、TCP或 SCTP，默认为 TCP
+
+我们简单看个 **nginx** 的例子：
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  namespace: aaa-test
+spec:
+  containers:
+  - name: nginx01
+    image: nginx:1.19.0
+    ports:
+      name: nginx-port
+      containerPost: 80
+      protocol: TCP
+```
+
+创建方式可以选择 3 中创建方式任意一种，然后创建完成后我们可以通过 `podIp+containerPort` 来访问到 nginx 资源
+
+**6. resources**
+
+容器中运行的程序需要占用一定的资源（CPU和内存），在运行的时候如果不对某个容器的资源进行限制，那么它可能会耗尽服务器的大量资源，防止这种情况的发生，k8s 中提供了 `resource` 属性，对资源进行限制。这个属性下有两个子选项：
+
+- **limits：** 用于限制运行容器的最大占用资源，当容器占用资源超过 limit 时会被终止，并进行重启
+- **requests：**  用于设置容器需要的最小资源，如果环境资源不够，容器将会无法启动
+
+看个使用例子：
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  namespace: aaa-test
+spec:
+  containers:
+  - name: nginx01
+    image: nginx:1.19.0
+    resources:
+      limits: # 上限
+        cpu: "2" # 单位 core 数
+        memory: "500Mi"
+      requests: # 下限
+        cpu: "1"
+        memory: "100Mi"
+```
+
+- **cpu：** core数，可以为整数或小数
+- **memory：** 内存大小，可以使用 Gi， Mi， G，M 等形式
 
