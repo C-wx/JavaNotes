@@ -191,37 +191,7 @@ kubectl [command] [TYPE] [NAME] [flags]
 
 我们通过一些简单的例子来简单的认识一下这个命令工具：
 
-```shell
-# 创建一个namespace
-[root@master ~]# kubectl create namespace dev
-namespace/dev created
-# 获取namespace
-[root@master ~]# kubectl get namespace
-NAME              STATUS   AGE
-aaa-test          Active   3m26s
-cbuc              Active   2d
-cbuc-ns           Active   5m36s
-cbuc-test         Active   11d
-default           Active   11d
-dev               Active   7s
-kube-node-lease   Active   11d
-kube-public       Active   11d
-kube-system       Active   11d
-# 在此namespace下创建并运行一个nginx的Pod
-[root@master ~]# kubectl run pod --image=nginx -n dev
-kubectl run --generator=deployment/apps.v1 is DEPRECATED and will be removed in a future version. Use kubectl run --generator=run-pod/v1 or kubectl create instead.
-deployment.apps/pod created
-# 查看新创建的pod
-[root@master ~]# kubectl get pod -n dev
-NAME                  READY  STATUS   RESTARTS   AGE
-pod-864f9875b9-pcw7x   1/1   Running      0      21s
-# 删除指定的pod
-[root@master ~]# kubectl delete pod pod-864f9875b9-pcw7x
-pod "pod-864f9875b9-pcw7x" deleted
-# 删除指定的namespace
-[root@master ~]# kubectl delete ns dev
-namespace "dev" deleted
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423124705317.png)
 
 #### 2）资源清单
 
@@ -229,104 +199,7 @@ namespace "dev" deleted
 
 我们先来看看一个 pod controller(控制器)  的yaml 文件中有哪些内容：
 
-```yaml
-apiVersion: v1
-kind: Deployment
-metadata: <Object>
-  namespace: test_ns #命名空间名称
-  name: nginx #资源名称
-  labels:
-    app: nginx #资源标签
-spec: <Object>
-  minReadySeconds: <integer> #设置pod准备就绪的最小秒数
-  paused: <boolean> #表示部署已暂停并且deploy控制器不会处理该部署
-  progressDeadlineSeconds: <integer>
-  strategy: <Object> #将现有pod替换为新pod的部署策略
-    rollingUpdate: <Object> #滚动更新配置参数，仅当类型为RollingUpdate
-      maxSurge: <string> #滚动更新过程产生的最大pod数量，可以是个数，也可以是百分比
-      maxUnavailable: <string> #
-    type: <string> #部署类型，Recreate，RollingUpdate
-  replicas: <integer> #pods的副本数量
-  selector: <Object> #pod标签选择器，匹配pod标签，默认使用pods的标签
-    matchLabels: <map[string]string> 
-      key1: value1
-      key2: value2
-    matchExpressions: <[]Object>
-      operator: <string> -required- #设定标签键与一组值的关系，In, NotIn, Exists and DoesNotExist
-      key: <string> -required-
-      values: <[]string>   
-  revisionHistoryLimit: <integer> #设置保留的历史版本个数，默认是10
-  rollbackTo: <Object> 
-    revision: <integer> #设置回滚的版本，设置为0则回滚到上一个版本
-  template: <Object> -required-
-    metadata:
-    spec:
-      containers: <[]Object> #容器配置
-      - name: <string> -required- #容器名、DNS_LABEL
-        image: <string> #镜像
-        imagePullPolicy: <string> #镜像拉取策略，Always、Never、IfNotPresent
-        ports: <[]Object>
-        - name: #定义端口名
-          containerPort: #容器暴露的端口
-          protocol: TCP #或UDP
-        volumeMounts: <[]Object>
-        - name: <string> -required- #设置卷名称
-          mountPath: <string> -required- #设置需要挂载容器内的路径
-          readOnly: <boolean> #设置是否只读
-        livenessProbe: <Object> #就绪探测
-          exec: 
-            command: <[]string>
-          httpGet:
-            port: <string> -required-
-            path: <string>
-            host: <string>
-            httpHeaders: <[]Object>
-              name: <string> -required-
-              value: <string> -required-
-            scheme: <string> 
-          initialDelaySeconds: <integer> #设置多少秒后开始探测
-          failureThreshold: <integer> #设置连续探测多少次失败后，标记为失败，默认三次
-          successThreshold: <integer> #设置失败后探测的最小连续成功次数，默认为1
-          timeoutSeconds: <integer> #设置探测超时的秒数，默认1s
-          periodSeconds: <integer> #设置执行探测的频率（以秒为单位），默认1s
-          tcpSocket: <Object> #TCPSocket指定涉及TCP端口的操作
-            port: <string> -required- #容器暴露的端口
-            host: <string> #默认pod的IP
-        readinessProbe: <Object> #同livenessProbe
-        resources: <Object> #资源配置
-          requests: <map[string]string> #最小资源配置
-            memory: "1024Mi"
-            cpu: "500m" #500m代表0.5CPU
-          limits: <map[string]string> #最大资源配置
-            memory:
-            cpu:         
-      volumes: <[]Object> #数据卷配置
-      - name: <string> -required- #设置卷名称,与volumeMounts名称对应
-        hostPath: <Object> #设置挂载宿主机路径
-          path: <string> -required- 
-          type: <string> #类型：DirectoryOrCreate、Directory、FileOrCreate、File、Socket、CharDevice、BlockDevice
-      - name: nfs
-        nfs: <Object> #设置NFS服务器
-          server: <string> -required- #设置NFS服务器地址
-          path: <string> -required- #设置NFS服务器路径
-          readOnly: <boolean> #设置是否只读
-      - name: configmap
-        configMap: 
-          name: <string> #configmap名称
-          defaultMode: <integer> #权限设置0~0777，默认0664
-          optional: <boolean> #指定是否必须定义configmap或其keys
-          items: <[]Object>
-          - key: <string> -required-
-            path: <string> -required-
-            mode: <integer>
-      restartPolicy: <string> #重启策略，Always、OnFailure、Never
-      nodeName: <string>
-      nodeSelector: <map[string]string>
-      imagePullSecrets: <[]Object>
-      hostname: <string>
-      hostPID: <boolean>
-status: <Object>
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423125521368.png)
 
 上面便是一个完整的 **deployment** 资源配置清单。老样子混个眼熟，不是每个 **deployment** 都需要这么多的配置，以下是必须存在的字段属性介绍：
 
@@ -345,25 +218,7 @@ status: <Object>
 
 我们结合以上必存的字段，可以简单写出一个 yaml （test.yaml） 文件：
 
-```shell
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: cbuc-ns
-  
-# 此处三个 - 表示分隔多个配置文件
----
-
-apiVersion: v1
-kind: Pod
-metadata:
-  name: nginx-pod
-  namespace: cbuc-ns
-spec:
-  containers:
-  - name: nginx01
-    image: nginx:1.19.0
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423125559194.png)
 
 然后我们可以通过 **命令式对象配置** 的方式创建出一个 pod：
 
@@ -441,17 +296,7 @@ metadata：
 
 然后我们就可以在资源创建的时候使用了：
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: test-pod
-  namespace: aaa-test
-spec:
-  containers:
-  - image: nginx:1.19.0
-    name: nginx01
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423125649100.png)
 
 然后执行 `kubectl create -f nginx.yml`，这样子我们就可以获取到一个 **pod** 资源，只有通过指定命名空间才能查看到我们的pod资源，这说明对其他用户是隔离的：
 
@@ -524,23 +369,11 @@ pod中有 5 中生命周期，我们都需要了解一下~
 - **Request**：表示该资源最小的申请量，系统必须满足要求
 - **Limits**：表示该资源最大允许使用量，不能超出这个量，当容器试图使用超过这个量的资源时，就会被 **Kubernetes** kill 掉并重启
 
-```shell
-spec:
-  containers:
-  - name: test01
-    image: nginx:1.19.0
-    resources: 
-      limits: 
-        cpu: "500m"
-        memory: "128Mi"
-      request:
-        cpu: "250m"
-        memory: "64Mi"
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423125708973.png)
 
 上面表示一个 **nginx** 容器最少需要 0.25个CPU和 64 MB内存，最多只能使用  0.5个CPU和 128 MB内存。
 
-##### ㈡ pod 使用
+##### ㈡ pod 基操
 
 我们先来看一份 **pod** 资源清单：
 
@@ -554,19 +387,7 @@ spec:
 
 我们如果想要创建一个 pod ，只需要简单准备一份 **test.yml** 文件即可：
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: nginxPod
-  namespace: cbuc-test
-spec: 
-  containsers:
-  - name: nginx
-    image: nginx:1.19.0
-  - name: java
-    image: java:1.8
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423125732198.png)
 
 然后通过 **命令式对象配置** 的指令 `kubectl create -f test.yml` 就可以获取到一个 nginx **pod**。这只是一个简单的pod 配置，我们在里面声明了两个容器：`nginx` 和 `java`。通过指令`kubectl get pod -n cbuc-test` 查看当前 **pod** 的状态。
 
@@ -604,18 +425,7 @@ kubectl exec -it pod名称 -n 命名空间 bash
 
 command 是用于在 pod 中的容器初始化完毕之后运行一个命令。
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: pod-command
-  namespace: aaa-test
-spec:
-  containers:
-  - name: centos
-    image: centos:7.0
-    command: ["/bin/sh","-c","touch /mnt/test.txt;while true;do /bin/echo $(date +%T) >> /mnt/test.txt; sleep 3; done;"]
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423125756962.png)
 
 我们在上面创建了一个 centos的pod，然后在pod初始化完成后，便会执行 command 中的命令，我们可以通过 `kubectl exec -it pod名称 -n 命名空间 bash` 然后进入到 `/mnt/test.txt`
 
@@ -631,19 +441,7 @@ kubectl exec -it pod名称 -n 命名空间 -c centos /bin/sh / # tail -f /mnt/te
 
 我们上面说到的 command 已经可以完成启动命令和传递参数的功能，但是我们 k8s 中还提供了一个 `args` 选项，用于传递参数。k8s 中使用 command 和 args 两个参数可以实现覆盖 Dockerfile 中的 **ENTRYPOINE** 的功能。
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: pod-command
-  namespace: aaa-test
-spec:
-  containers:
-  - name: centos
-    image: centos:7.0
-    command: ["/bin/sh"]
-    args: ["-c","touch /mnt/test.txt;while true;do /bin/echo $(date +%T) >> /mnt/test.txt; sleep 3; done;"]
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423125814941.png)
 
 `注意:`
 
@@ -656,21 +454,7 @@ spec:
 
 用于在 pod 中的容器设置环境变量
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: pod-command
-  namespace: aaa-test
-spec:
-  containers:
-  - name: centos
-    image: centos:7.0
-    env:
-    - name: "username"
-      value: "cbuc"
-    command: ["/bin/sh", "-c", "/bin/echo $username >> /mnt/test.txt;"]
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423125846767.png)
 
 执行命令查看：
 
@@ -698,21 +482,7 @@ ports 在 k8s 的属性类型是 Object，我们可以通过 `kubectl explain po
 
 我们简单看个 **nginx** 的例子：
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: nginx-pod
-  namespace: aaa-test
-spec:
-  containers:
-  - name: nginx01
-    image: nginx:1.19.0
-    ports:
-      name: nginx-port
-      containerPost: 80
-      protocol: TCP
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423125906758.png)
 
 创建方式可以选择 3 中创建方式任意一种，然后创建完成后我们可以通过 `podIp+containerPort` 来访问到 nginx 资源
 
@@ -725,7 +495,156 @@ spec:
 
 看个使用例子：
 
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423125935052.png)
+
+- **cpu：** core数，可以为整数或小数
+- **memory：** 内存大小，可以使用 Gi， Mi， G，M 等形式
+
+##### ㈢ pod 扩展
+
+###### ① 生命周期
+
+任何事物的创建过程都有属于它自己的生命周期，而 pod 对象从创建到销毁，这段的时间范围便称为 **pod** 的生命周期。生命周期一般包含下面几个过程：
+
+`⒈` 运行初始化容器 （init container） 过程
+
+`⒉` 运行主容器 （main container）
+
+​     `2.1` 容器启动后钩子（post start），容器终止前钩子（pre stop）
+
+​     `2.2` 容器存活性检测（liveness probe），就绪性检测（readiness probe）
+
+`⒊` pod 终止过程
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210421125120629.png)
+
+在整个生命周期中，**pod** 也会相应的出现 **5** 中状态，如下：
+
+- **挂起（Pending）：** apiServer 已经创建 pod 资源对象，但它尚未被调度完成或者仍处于下载镜像的过程中
+- **运行中（Running）：** pod 已经被调度至某节点，并且所用容器都已经被 kubelet 创建完成
+- **成功（Succeeded）：** pod 中的所有容器都已经成功终止并且不会被重启
+- **失败（Failed）：** 所有容器都已经终止，但至少有一个容器终止失败，即容器返回了非 0 值的退出状态
+- **未知（UnKnown）：** apiServer 无法获取到 pod 对象的状态信息，通常是因为网络通信失败导致的
+
+ **⑴ pod 的创建过程**
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210410181842.png)
+
+**kubernetes** 启动后，无论是 **master** 节点 亦或者 **node** 节点，都会将自身的信息存储到 **etcd** 数据库中
+
+1. 用户通过 **kubectl** 或其他 api 客户端提交需要创建的 pod 信息给 **apiServer**
+2. **apiServer**  接收到信息后会生成 pod 对象信息，并存入 **etcd** 数据库中，返回确认消息给客户端
+3. **apiServer** 开始反映 **etcd** 中 pod 对象的变化，其他组件会使用 **watch** 机制来跟踪检查 **apiServer** 上的变动
+4. **scheduler** 发现如果有新的 pod 对象需要创建，便会为 pod 分配主机并将结果回送至 **apiServer**
+5. **node** 节点上的 **kubectl** 发现有 pod 调度过来，会尝试调用 **docker** 启动容器，并将结果返回给 **apiServer**
+6. **apiServer** 将接收到的 pod 状态信息存入 **etcd** 中
+
+**⑵ pod 的终止过程** 
+
+1. 用户首先向 **apiServer** 发送删除 pod 对象的命令
+2. **apiServer** 中的pod对象信息会随着时间的推移而更新，在宽限期内（默认30s），pod 会被视为 **dead** 状态，并将 pod 标记为 **terminating** 状态
+3. **kubelet** 在监控到 pod 对象转为 **terminating** 状态的同时启动 pod 关闭过程
+4. 端点控制器监控到 pod 对象的关闭行为时将其从所有匹配到此端点的 **service** 资源的端点列表中移除
+5. 如果当前 pod 对象定义了 `preStop` 钩子处理器，则在其标记为 **terminating** 后即会以同步的方式启动执行
+6. pod 对象中的容器进程接收到停止信号，并停止容器
+7. 宽限期结束后，如果 pod 中还存在仍在运行的进程，那么 pod 对象就会收到立即终止的信号
+8. **kubelet** 请求 **apiServer** 将此 pod 资源的宽限期设置为 0 从而完成删除操作。
+
+**⑶ 初始化容器** 
+
+初始化容器，看名字也大致能够猜到初始化容器是在 pod 主容器启动之前要运行的容器，主要是做一些主容器的前置工作。
+
+`特征：`
+
+- 初始化容器必须运行完成直至结束，如果运行失败便会进行重启直至成功
+- 初始化容器必须按照顺序执行，只有前一个成功后，后一个才能执行
+
+这里简单看一个使用例子：
+
+//todo
+
 ```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-initcontainer
+  namespace: dev
+spec:
+  containers:  # 主容器
+  - name: main-container
+    image: nginx:1.17.1
+    ports:
+    - name: nginx-port
+      containerPort: 80
+  initContainers:  # 初始化容器
+    - name: test-mysql
+      image: busybox:1.30
+       command: ['sh', '-c', 'until ping 192.168.109.201 -c 1 ; do echo waiting for
+mysql...; sleep 2; done;']
+    - name: test-redis
+      image: busybox:1.30
+      command: ['sh', '-c', 'until ping 192.168.109.202 -c 1 ; do echo waiting for
+reids...; sleep 2; done;']
+```
+
+```shell
+# 创建pod
+[root@master ~]# kubectl create -f pod-initcontainer.yaml
+pod/pod-initcontainer created
+# 查看pod状态
+# 发现pod卡在启动第一个初始化容器过程中，后面的容器不会运行
+root@master ~]# kubectl describe pod pod-initcontainer -n dev
+........
+Events:
+Type Reason Age From Message
+---- ------ ---- ---- -------
+Normal Scheduled 49s default-scheduler Successfully assigned dev/pod-
+initcontainer to node1
+Normal Pulled 48s kubelet, node1 Container image "busybox:1.30" already
+present on machine
+Normal Created 48s kubelet, node1 Created container test-mysql
+Normal Started 48s kubelet, node1 Started container test-mysql
+# 动态查看pod
+[root@master ~]# kubectl get pods pod-initcontainer -n dev -w
+NAME READY STATUS RESTARTS AGE
+pod-initcontainer 0/1 Init:0/2 0 15s
+pod-initcontainer 0/1 Init:1/2 0 52s
+pod-initcontainer 0/1 Init:1/2 0 53s
+pod-initcontainer 0/1 PodInitializing 0 89s
+pod-initcontainer 1/1 Running 0 90s
+# 接下来新开一个shell，为当前服务器新增两个ip，观察pod的变化
+[root@master ~]# ifconfig ens33:1 192.168.109.201 netmask 255.255.255.0 up
+[root@master ~]# ifconfig ens33:2 192.168.109.202 netmask 255.255.255.0 up
+```
+
+**⑷ 钩子函数**
+
+不知道你对钩子函数这个词是否有一些了解~ 钩子函数能够感知自身生命周期中的事件，在相应的时刻到来时就会运行用户指定的程序代码。
+
+在 **k8s** 提供了两个钩子函数，分别是`启动之后`和`停止之前`
+
+- **post start**：容器创建之后执行。如果失败了会重启容器
+- **pre stop：** 容器终止之前执行。执行完成之后容器将成功终止，在其完成之前会阻塞删除容器的操作
+
+那么钩子函数有了，我们该如何定义这个函数呢？在 **k8s** 中钩子函数支持使用三种方式定义动作：
+
+- **exec 命令**
+
+在容器中执行一次命令，如果命令执行的退出码为0，则认为程序正常，否则反之。
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423130022484.png)
+
+- **tcpSocket**
+
+将会尝试访问一个用户容器的端口，如果能够建立这条连接，则认为程序正常，否则不正常
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423130043203.png)
+
+- **httpGet**
+
+调用容器内Web应用的URL，如果返回的状态码在200和399之间，则认为程序正常，否则不正常
+
+```shell
 apiVersion: v1
 kind: Pod
 metadata:
@@ -735,15 +654,288 @@ spec:
   containers:
   - name: nginx01
     image: nginx:1.19.0
-    resources:
-      limits: # 上限
-        cpu: "2" # 单位 core 数
-        memory: "500Mi"
-      requests: # 下限
-        cpu: "1"
-        memory: "100Mi"
+    lifecycle:
+      postStart: 
+        httpGet:
+          path: /  # URL请求地址
+          port: 8080  # 端口
+          host: 192.168.100.102  #主机地址
+          scheme: HTTP # 支持的协议，http或https
 ```
 
-- **cpu：** core数，可以为整数或小数
-- **memory：** 内存大小，可以使用 Gi， Mi， G，M 等形式
+// todo 查看效果
 
+###### ② 容器探测
+
+容器探测是用来检测容器中的应用实例是否正常工作，是保障业务可用性的一种传统机制。如果经过探测，实例的状态不符合预期结果，那么 k8s 就会把这个实例删除。在 k8s 中也支持了两种探针来实现容器探测：
+
+- **liveness probes：** 存活性探针，用于检测应用实例当前是否处于正常运行状态，如果不是，k8s 会重启容器
+- **readiness probe：** 就绪性探针，用于检测应用实例当前是否可以接受请求，如果不能，k8s不会转发流量
+
+> `注意：`
+>
+> **livenessProbe** 决定了容器是否需要重启
+>
+> **readinessProbe** 决定了是否将请求转发给容器
+
+这两种探针支持的检测方式与上面生命周期检测的方式一样：
+
+- **exec 命令**
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423130132109.png)
+
+- **TCPSocket**
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423130146252.png)
+
+- **httpGet**
+
+```shell
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  namespace: aaa-test
+spec:
+  containers:
+  - name: nginx01
+    image: nginx:1.19.0
+    livenessProbe:
+      httpGet:
+        path: /  # URL请求地址
+        port: 8080  # 端口
+        host: 192.168.100.102  #主机地址
+        scheme: HTTP # 支持的协议，http或https
+```
+
+// todo 查看效果
+
+###### ③ 重启策略
+
+在 **容器探测** 检测出容器有问题后， **k8s** 就会对容器所在的 pod 进行重启，而这些重启的定义便是由 pod 自身的重启策略决定的，pod 的重启策略有如下3种：
+
+- **Always：** 容器失效时，自动重启该容器（默认值）
+
+- **OnFailure：** 容器终止运行且退出码不为0时重启
+- **Never：** 不论状态为何，都不重启该容器
+
+首次需要重启的容器会立即进行重启，如果随后还需要重启，那么**kubectl** 便会延迟一段时间后才进行，反复重启的操作延迟时长为 `10s,20s,30s,40s,80s,160s和300s`，其中300s是最大的延迟时长
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423130207824.png)
+
+##### ㈣ pod 调度
+
+上面说到过默认情况下，pod 在哪个 Node 节点上运行是由 **Scheduler**组件采用相应的算法计算出来的，这个过程是不受人工控制的。但是在实际的使用场景中我们有时候想要控制某些pod到达某些节点上，而针对于这种需求，**k8s** 当然也是可以满足的~ 在 k8s 中它提供了 `4` 中调度方式：
+
+- **自动调度：** 由 **scheduler** 组件计算运行在哪个node节点上
+- **定向调度：** 由用户自定义，需要用到 `NodeName`、`NodeSelector`  属性
+- **亲和性调度：** 由用户自定义，需要用到 `NodeAffinity、PodAffinity、PodAntiAffinity` 属性
+- **污点容忍调度：** 由用户自定义，需要用到 `Taints、Toleration`属性
+
+###### ① 定向调度
+
+我们可以利用 **nodeName** 或者 **nodeSelector** 来标记 pod 需要调度到期望的 node 节点上。这里的标记是强制性，不管 node 节点有没有宕机，都会往这个节点上面调度，因此如果node节点宕机的话，就会导致 pod 运行失败。
+
+- **NodeName**
+
+这个属性用于强制约束将 Pod 调度到指定名称的 node节点上，这种方式，其实就是直接跳过 **scheduler** 的调度逻辑。
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423130234079.png)
+
+上面已经准备了一个 pod 的yaml文件，我们创建看下是否能够调度到我们想要的节点上
+
+//todo
+
+可以看到 pod 节点已经成功的调度到名称为 node01 的节点上了
+
+- **NodeSelector**
+
+这个属性是用于将 pod 调度到添加了指定标签上的 node 节点上（k8s 中资源可以打标签，我们一样可以对 node 节点打标签）。它是通过 **k8s** 的 label-selector 机制实现的，就是说在 pod 创建之前，会由 **scheduler** 的使用 **MatchNodeSelector** 的调度策略进行 label 匹配，找出目标 node，然后将 pod 调度到目标节点，该匹配规则也是属于强制约束。
+
+`测试：`
+
+ 首先对 node 节点打上标签：
+
+```shell
+kubectl label nodes node01 app=node-dev
+```
+
+然后准备一份 pod yaml文件：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423130252411.png)
+
+然后我们创建后查看：
+
+//todo
+
+###### ② 亲和度调度
+
+上面介绍的定向调度是属于强制性约束，如果没有满足的node节点供运行的话，pod 就是启动失败，这样子就很大地限制了它的使用场景。所以我们接下来介绍的 **亲和度调度 (Affinity)** 便是用来解决这种问题的。
+
+它是通过配置的形式，实现优先选择满足条件的 Node 进行调度，如果有就调度到对应节点，如果没有，也可以调度到不满足条件的节点上，这样可以使调度更加灵活
+
+**Affinity分为三大类：**
+
+- **nodeAffinity（node亲和性）**
+
+以`node`为目标，解决 pod 可以调度到哪些 `node` 的问题
+
+这个属性中又存在 `requiredDuringSchedulingIgnoredDuringExecution (硬限制)` 和 `preferredDuringSchedulingIgnoredDuringExecution (软限制)` 两种
+
+Ⅰ、**requiredDuringSchedulingIgnoredDuringExecution** (硬限制)
+
+这个限制和上面说到的定向调度有点像，只选择满足条件的 node 节点进行调度，使用例子如下：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423130317687.png)
+
+上面我们创建了一个 pod，会在标签 `key`为 **app**，且`value` 为 **node-pro 或 node-test** 的节点上选择，但是并不存在具备这个标签的节点，因此这个pod最终的结果是启动失败的~
+
+//todo 结果截图
+
+我们上面看到了一个新的属性 `matchExpressions`，这个是用来编写关系表达式的，具体使用方法如下：
+
+```yaml
+- matchExpressions:
+  - key: app # 匹配存在标签的key为 app 的节点
+    operator: Exists
+  - key: app # 匹配标签的key为 app ,且value是"xxx"或"yyy"的节点
+    operator: In
+    values: ["xxx","yyy"]
+  - key: app # 匹配标签的key为 app, 且value大于"xxx"的节点
+    operator: Gt
+    values: "xxx"
+```
+
+Ⅱ、 **preferredDuringSchedulingIgnoredDuringExecution (软限制)**
+
+上面已经了解到了 **硬限制** 的使用，**软限制** 的使用也是一样的，我们直接来看 yaml 文件：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423130352702.png)
+
+这份 yaml 文件和 **硬限制** 的 yaml 是一致的，只是 **软硬** 属性换了一下，硬限制通过这份yaml创建 pod 失败的，我们来试下 软限制创建 pod：
+
+// todo
+
+这边可以看到虽然不存在满足条件的node，但是也是可以成功运行pod 的，只是调度到了不满足调节的 node 上！
+
+- **podAffinity（pod 亲和性）** 
+
+以 pod 为目标，解决pod可以和哪些已存在的pod部署在同一个拓扑域中的问题。
+
+**podAffinity** 同样也存在 **硬限制 和 软限制** ，我们接下来直接看下如何配置：
+
+![image-20210423130432962](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423130432962.png)
+
+上面便是 podAffinity 硬限制的yaml文件，除了眼熟的属性之外，我们还看到了一个新的属性 `topologyKey`，那么这个属性是用来干嘛的呢？
+
+> topologyKey 用于指定调度时作用域：
+>
+> - 如果值为 `kubernetes.io/hostname` ，说明是以 node 节点为区分范围
+> - 如果值为 `kubernetes.io/os`， 则以 node 节点的**操作系统**来区分
+
+了解完硬限制的编写，软限制也只是换了个属性名称，这里不再赘诉~
+
+- **podAntiAffinity（pod反亲和性）**
+
+以pod 为目标，解决pod不能和哪些已存在的pod部署在同一个拓扑域中的问题。
+
+这个使用就是和上面基本一致了，就是和 **podAffinity** 要求反着来就是了，属性名换个就完事了~
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423130449825.png)
+
+这个yaml文件代表的含义便是选择不和标签带有 `app=test01` 或 `app=test02` 的pod "共处一室"。同样存在硬限制和软限制的配置
+
+> **亲和性** 和 **反亲和性** 的使用场景
+>
+> **亲和性：** 如果两个应用交互频繁，那就有必要利用亲和性让两个应用尽可能的靠近，可以减少因为网络通信而带来的性能损耗
+>
+> **反亲和性：** 当应用采用多副本部署的时候，有必要采用反亲和性让各个应用实例打散分布在各个 node 上，这样可以提高服务的高可用性
+
+###### ③ 污点(Taint)
+
+我们先来看下目前 pod 存在于每个节点的情况，
+
+//todo 
+
+是否发现了一个问题，那就是 pod 基本都分布在了 node 节点上，而 master 节点却没有运行任何pod。而这个原因便是和我们要讲到的`污点` 有关系了！
+
+我们前面说到的调度都是站在 pod 的角度，让 pod 选择 node 进行运行，而污点很好的进行了反转。**让node节点决定让哪些pod可以调度过来！**
+
+Node 可以设置 `污点` ，设置上 `污点` 之后，就会和 pod 之间形成了一种排斥关系。这种关系存在的意义便是可以拒绝 pod 调度进来，也可以将已经存在的 pod 驱逐出去。
+
+`污点格式：` **key=value:effect**
+
+**key** 和 **value** 是污点的标签，而 **effect** 则是用来描述污点的作用，支持三种功能定义：
+
+- **PreferNoSchedule**
+
+ **k8s**将尽量避免把 Pod 调度到具有该污点的 node 节点上，除非没有其他节点可以调度。`（尽量不要来，除非没办法）`
+
+- **NoScheduler**
+
+ **k8s** 将不会把 Pod 调度到具有该污点的 node 节点上，但不会影响当前 Node 上已经存在的 pod。`(新的不要来，在这的就别动了)`
+
+- **NoExecute**
+
+ **k8s** 将不会把 Pod 调度到具有该污点的 node 节点上，同时也会将 Node 上已经存在的 Pod 驱逐。`（新的不要来，在这的赶紧走）`
+
+**设置污点命令如下：**
+
+```shell
+# 设置污点
+kubectl taint nodes node01 key=value:effect
+
+# 去除污点
+kubectl taint nodes node01 key:effect-
+
+# 去除所有污点
+kubectl taint nodes node01 key-
+```
+
+//todo 试验
+
+因此我们可以看到三种污点的不同用法。而 k8s中的 **master**节点之所以没有运行任何pod，那便是因为 **master** 节点上已经存在了污点：
+
+//todo
+
+###### ④ 容忍(Toleration)
+
+上面说到如果 node 节点存在污点，那么pod就会无法调度。那如果 pod 有时候就是想 "厚着脸皮"，哪怕你存在污点，也不嫌弃的想要调度进去有没有办法解决呢？
+
+**k8s** 也是想到了这种情况的存在，因此便有了一个 `容忍` 的属性！
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423114338264.png)
+
+> 污点就是拒绝，容忍就是忽略，Node 通过污点来拒绝 pod 调度上去，pod 通过容忍忽略拒绝
+
+我们先给 node01 打上 `NoExecute` 的污点，然后我们再给 pod 添加容忍，看下是否能够成功调度上去
+
+`pod yaml：`
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423130535989.png)
+
+通过添加容忍后，我们可以发现pod 在 node01 的节点上成功运行了，说明容忍成功~
+
+容忍的配置信息如下：
+
+```yaml
+tolerations:
+- key 		# 对应着要容忍的污点的键，空意味着匹配所有的键
+  value		# 对应着要容忍的污点值
+  operator	# key-value 的运算符，支持 Equal 和 Exists（默认）
+  effect    # 对应污点的effect，空意味着匹配所有的影响
+  tolerationSeconds  # 容忍时间，当 effect 为NoExecute 时生效，表示 pod 在Node上的停留时间
+```
+
+**END**
+
+关于 k8s 中 pod 的介绍到这里就结束啦~个人觉得还是挺详细的，如果能够认真看下来，相信对 pod 已经有足够了解了。但是你认为 k8s 到这里就结束了吗？那肯定不会的，碍于篇幅，所以其他资源组件留到下一节介绍~请动动小手，点点关注不迷路。路漫漫，小菜与你一同求索！
+
+![看完不赞，都是坏蛋](https://gitee.com/cbuc/picture/raw/master/typora/aHR0cHM6Ly93d3cuNTJkb3V0dS5jbi9zdGF0aWMvdGVtcC9waWMvOWJkNjhkMTUwZjA3ODdjNTYwYTQzOWRhMzU5YTU4MGEucG5n)
+
+> 今天的你多努力一点，明天的你就能少说一句求人的话！
+>
+> *我是小菜，一个和你一起学习的男人。* `💋`
+>
+>
+> 微信公众号已开启，**小菜良记**，没关注的同学们记得关注哦！
