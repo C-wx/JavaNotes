@@ -93,32 +93,11 @@ spec:				  # 详细描述
 
 我们编写一个 **yaml** 试着创建一个 RS 控制器：
 
-```yaml
-apiVersion: apps/v1
-kind: ReplicaSet
-metadata:
-  name: rs-ctrl
-  namespace: cbuc-test
-  labels:
-    app: rs-ctrl
-spec: 
-  replicas: 2
-  selector:
-    matchLabels:
-      app: nginx-dev
-  template: 
-    metadata:
-      labels:
-        app: nginx-dev
-    spec:
-      containers:
-      - name: nginx01
-        image: nginx:1.14.1
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501144309.png)
 
 通过 `kubectl create -f rs.yaml` 后可以发现已经存在了两个pod，说明副本数量生效，当我们删除一个 pod，过一会便会自动启动一个 pod！
 
-// todo
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501144234.png)
 
 ##### 扩缩容
 
@@ -156,22 +135,24 @@ kubectl scale rs rs-ctrl --replicas=2 -n cbcu-test
 kubectl edit rs rs-ctrl -n cbuc-test
 ```
 
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501144533.png)
+
 编辑镜像版本号后保存退出，可以发现正在运行的pod使用的镜像已经变了
 
-//todo
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501144636.png)
 
 ###### 命令修改
 
 处理以上通过修改yaml的方式，我们也可以直接通过命令的方式修改
 
 ```shell
-kubectl set images rs rs-ctrl nginx=nginx:1.17.1 -n cbuc-test
+kubectl set image rs rs-ctrl nginx=nginx:1.17.1 -n cbuc-test
 ```
 
 格式如下：
 
 ```shell
-kubectl set images rs 控制器名称 容器名称=镜像名称:镜像版本 -n 命名空间
+kubectl set image rs 控制器名称 容器名称=镜像名称:镜像版本 -n 命名空间
 ```
 
 ##### 删除镜像
@@ -208,42 +189,7 @@ Deployment 控制器简称 **Deploy**，这个控制器是在**kubernetes v1.2**
 
 三大利器，将开发拿捏死死地~我们来看下资源清单是如何配置的：
 
-```yaml
-apiVersion: apps/v1   # 版本号
-kind: Deployment      # 类型
-metadata:             # 元数据信息
-  name: 			  # 名称
-  namespace:          # 命名空间
-  labels:             # 标签
-    key: value
-spec:				  # 详细描述
-  replicas:           # 副本数
-  revisionHistoryLimit: 3		# 保留历史版本的数量
-  paused: false		  # 暂停部署，默认是 false
-  pregressDeadlineSeconds: 600	# 部署超时时间(s)，默认是 600
-  strategy:			  # 策略
-    type: RollingUpdate		# 滚动更新策略
-    rollingUpdate: 			# 滚动更新
-      maxSurge: 30%			# 最大额外可以存在的副本数，可以为百分比，也可以为整数
-      maxUnavaibable: 30%   # 最大不可用状态的 pod 的最大值，可以为百分比，也可以为整数
-  selector:           # 选择器，通过它指定该控制器管理那些Pod
-    matchLabels:      # labels 匹配规则
-      app: 
-    matchExpressions:
-    - key: xxx
-      operator: xxx
-      values: ['xxx', 'xxx']
-  template:       # 模板，当副本数量不足时，会根据以下模板创建Pod副本
-    metadata:
-      labels:
-        key: value
-    spec:
-      containers:
-      - name: 
-        image:
-        ports:
-        - containerPort: 
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501145057.png)
 
 从资源清单中我们可以看出，**ReplicaSet** 中有的，**Deployment** 都有，而且还增加了许多属性
 
@@ -251,32 +197,11 @@ spec:				  # 详细描述
 
 准备一份 deploy 资源清单：
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: deploy-ctrl
-  namespace: cbuc-test
-  labels:
-    app: deploy
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-     app: nginx-dev
-  template:
-    metadata:
-      labels:
-        app: nginx-dev
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:1.14.1
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501144848.png)
 
-//todo
+然后通过 `kubectl create -f deploy-ctrl.yaml` 创建pod控制器，查看结果：
 
-然后通过 `kubectl create -f deploy.yaml` 创建pod控制器，查看结果：
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501144758.png)
 
 ###### 扩缩容
 
@@ -320,8 +245,6 @@ strategy：			# 指定新的Pod替换旧的Pod的策略， 支持两个属性：
 
 ![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210427132829139.png)
 
-// todo
-
 - **history**
 
 显示升级历史记录
@@ -329,6 +252,8 @@ strategy：			# 指定新的Pod替换旧的Pod的策略， 支持两个属性：
 ```shell
 kubectl rollout history deploy deploy-ctrl -ncbuc-test
 ```
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501145457.png)
 
 - **pause**
 
@@ -370,6 +295,8 @@ kubectl rollout status deploy deploy-ctrl -ncbuc-test
 kubectl rollout undo deploy deploy-ctrl -ncbuc-test
 ```
 
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501145700.png)
+
 #### 3）Horizontal Pod Autoscaler
 
 看名字就感觉这个不简单，该控制器简称 **HPA** ，我们之前是手动控制 pod 的扩容或缩容，但是这中方式并不智能，我们需要随时随地观察资源状态，然后控制副本数量，这是一个相当费时费力的工作~ 因此我们想要能够存在一种能够自动控制 Pod 数量的控制器来帮助我们监测 pod 的使用情况，实现 pod 数量的自动调整。而 **K8s** 也为我们提供了 **Horizontal Pod Autoscaler - HPA**
@@ -379,8 +306,6 @@ kubectl rollout undo deploy deploy-ctrl -ncbuc-test
 ![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210429131536207.png)
 
 如果需要监测 pod 的负载情况，我们需要 **metrics-server** 的帮助，因此我们首先需要先安装 **metrics-server**
-
-// todo 
 
 ```shell
 # 安装git
@@ -397,12 +322,12 @@ args:
 - --kubelet-preferred-address-types=InternalIP,Hostname,InternalDNS,ExternalDNS,ExternalIP
 ```
 
-![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210429131912518.png)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501150334.png)
 
 然后直接创建即可：
 
 ```shell
-kubectl create -f /root/metrics-server/deploy/1.8+/metrics-server-deployment.yaml
+kubectl apply -f /root/metrics-server/deploy/1.8+/
 ```
 
 安装结束后我们便可以使用以下命令查看每个node的资源使用情况了
@@ -411,11 +336,15 @@ kubectl create -f /root/metrics-server/deploy/1.8+/metrics-server-deployment.yam
 kubectl top node
 ```
 
+![](C:/Users/14046/AppData/Roaming/Typora/typora-user-images/image-20210501152824414.png)
+
 查看pod资源使用情况
 
 ```shell
 kubectl top pod -n cbuc-test
 ```
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501152901.png)
 
 然后我们便可以创建 **HPA**，准备好资源清单：
 
@@ -457,36 +386,7 @@ spec:
 
 **资源清单模板**：
 
-```yaml
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: ds-ctrl
-  namespace: cbuc-test
-  lebels:
-    app: ds-ctrl
-spec:
-  revisionHistoryLimit: 3	# 保留历史版本数
-  updateStrategy:			# 更新策略
-    type: RollingUpdate		# 滚动更新策略
-    rollingUpdate:			# 滚动更新
-      maxUnavailable: 1		# 最大不可用状态的 Pod 最大值，可以为百分比，也可以为整数
-  selector:					# 选择器，通过它指定该控制器控制哪些 Pod
-    matchLabels:			# Labels匹配规则
-      app: nginx-pod
-    matchExpressions:       # Expressions 匹配规则
-    - {key: app, operator: In, values: [nginx-pod]}
-  template: 				# 模板，当副本数量不足时，会根据下面的模板创建Pod
-    metadata:
-      labels:
-        app: nginx-pod
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:1.14.1
-        ports:
-        - containerPost: 80
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501153248.png)
 
 其实不难发现，该清单跟 **Deployment** 几乎一致，因此我们不妨大胆猜测，这个控制器就是针对 **Deployment** 改良的懒人工具，可以自动帮我们创建Pod~
 
@@ -506,15 +406,15 @@ spec:
     metadata:
       labels:
 		app: nginx-pod
-  spec:
-    containers:
-    - name: nginx
-	  image: nginx:1.14.1
+  	spec:
+      containers:
+      - name: nginx
+	    image: nginx:1.14-alpine
 ```
 
 通过该清单创建后，我们可以发现在每个 Node 节点上都创建了 nginx pod~
 
-//todo
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501153151.png)
 
 #### 5）Job
 
@@ -527,6 +427,17 @@ spec:
 
 **资源清单模板：**
 
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501154108.png)
+
+> 这里重启策略是必须指明的，且只能为 Never 或 OnFailure，原因如下：
+>
+> - 如果指定为OnFailure，则job会在pod出现故障时重启容器，而不是创建pod，failed次数不变
+> - 如果指定为Never，则job会在pod出现故障时创建新的pod，并且故障pod不会消失，也不会重启，failed次数加1
+> - 如果指定为Always的话，就意味着一直重启，意味着job任务会重复去执行了，当然不对，所以不能设置为
+>   Always
+
+**实战清单：**
+
 ```yaml
 apiVersion: batch/v1
 kind: Job
@@ -536,25 +447,79 @@ metadata:
   labels:
     app: job-ctrl
 spec:
-  completions: 1	# 指定Job需要成功运行Pods的次数，默认值为 1
-  parallelism: 1	# 指定Job在任一时刻应该并发运行Pods的数量，默认值为 1
-  activeDeadlineSeconds: 30  # 指定Job可运行的时间期限，超过时间还未结束，系统将尝试进行终止
-  backoffLimit: 6 	# 指定Job失败后进行重试的次数，默认值为 6
-  manualSelector: true	 # 是否可以使用 selector 选择器选择Pod，默认值为 false
-  selector:					# 选择器，通过它指定该控制器控制哪些 Pod
-    matchLabels:			# Labels匹配规则
-      app: counter-pod
-    matchExpressions:       # Expressions 匹配规则
-    - {key: app, operator: In, values: [counter-pod]}
-  template: 				# 模板，当副本数量不足时，会根据下面的模板创建Pod
+  manualSelector: true
+  selector:
+    matchLabels:
+      app: job-pod
+  template:
     metadata:
       labels:
-        app: counter-pod
+        app: job-pod
     spec:
+      restartPolicy: Never
       containers:
-	  - name: counter
-		image: busybox:1.30
-		command: ["bin/sh","-c","for i in 9 8 7 6 5 4 3 2 1; do echo $i;sleep 2;done"]
+      - name: test-pod
+        image: cbuc/test/java:v1.0
+        command: ["bin/sh","-c","for i in 9 8 7 6 5 4 3 2 1; do echo $i;sleep 2;done"]
 ```
 
+![](C:/Users/14046/AppData/Roaming/Typora/typora-user-images/image-20210501153736929.png)
+
+**通过观察pod状态可以看到，pod在运行完毕任务后，就会变成Completed状态**
+
+#### 6）CronJob
+
+**CronJob**控制器简称 **CJ**，它的作用是以 Job 控制器为管理单位，借助它管理 pod 资源对象。Job 控制器定义的任务在创建时便会立刻执行，但 cronJob 控制器可以控制其运行的 **时间点**及 **重复运行** 的方式。
+
+![](C:/Users/14046/AppData/Roaming/Typora/typora-user-images/image-20210501154604536.png)
+
+**资源清单模板：**
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501155300.png)
+
+其中 **并发执行策略** 有以下几种：
+
+- **Allow：** 允许 Jobs 并发运行
+- **Forbid：** 禁止并发运行，如果上一次运行尚未完成，则跳过下一次运行
+- **Replace：** 替换，取消当前正在运行的作业并用新作业替换它
+
 **实战清单：**
+
+```yaml
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cj-ctrl
+  namespace: cbuc-test
+  labels:
+    controller: cronjob
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    metadata:
+    spec:
+	  template:
+		spec:
+		  restartPolicy: Never
+		  containers:
+ 		  - name: test
+			image: cbuc/test/java:v1.0
+			command: ["bin/sh","-c","for i in 9 8 7 6 5 4 3 2 1; do echo $i;sleep3;done"]
+```
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210501161426.png)
+
+从结果上看我们也已经成功实现了定时任务，每秒执行一次~
+
+**END**
+
+这篇我们介绍了 Pod 控制器的使用，一共有 6种控制器，不知道看完后，你还记住几种呢~老样子，实践出真知，凡事还是要上手练习才能记得更牢哦~ **K8s** 仍未结束，我们还有 **Service、Ingress和 Volumn** 还没介绍！路漫漫，小菜与你一同求索~
+
+![看完不赞，都是坏蛋](https://gitee.com/cbuc/picture/raw/master/typora/20210501161838.png)
+> 今天的你多努力一点，明天的你就能少说一句求人的话！
+>
+> *我是小菜，一个和你一起学习的男人。* `💋`
+>
+>
+> 微信公众号已开启，**小菜良记**，没关注的同学们记得关注哦！
+
