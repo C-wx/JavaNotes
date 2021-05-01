@@ -5,7 +5,7 @@
 ![](https://gitee.com/cbuc/picture/raw/master/typora/20210411110759.jpeg)
 
 
->本文主要介绍 `kubernetes 的使用`
+>本文主要介绍 `kubernetes中pod的使用`
 >
 >如有需要，可以参考
 >
@@ -18,7 +18,7 @@
 
 [不要让贫穷扼杀了你学 k8s 的兴趣](https://mp.weixin.qq.com/s/iQXX6Xm4SKJkTCKRN0qDzA)
 
-这篇我们本着善始善终的原则，一文教会你如何使用 k8s ，成为别人家的程序员~
+这篇我们本着善始善终的原则，继续带你搞明白 k8s 中的**pod** ，成为别人家的程序员~
 
 我们老样子，先回顾下 k8s 中存在的几种组件：
 
@@ -55,7 +55,7 @@
 
 ![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210413131057604.png)
 
-通过上面那张图我们差不多就可以将 kubernetes 中的重点资源理解一遍了，大概明白每个资源在集群中起到的作用。
+通过上面那张图我们差不多就可以将 **kubernetes** 中的重点资源理解一遍了，大概明白每个资源在集群中起到的作用。
 
 我们有三种方式可以对资源对象进行管理：
 
@@ -93,7 +93,7 @@ kubectl apply -f nginx.yml
 
 **kubectl** 这个是 **kubernetes** 集群的命令行工具，通过 **kubectl** 能够对集群本身进行管理，并能够在集群上进行容器化应用的安装部署。可以想象我们接下来的操作绝大部分都需要借助这个命令工具的帮助。
 
-我们之前也已经使用过一次了：`kubectl get nodes` 。这个命令便是用来获取集群中各个节点状态的，那么不难以想象，这个命令的语法：
+我们之前也已经使用过一次了：`kubectl get nodes` 。这个命令便是用来获取集群中各个节点状态的，那么不难想象，这个命令的语法：
 
 ```shell
 kubectl [command] [TYPE] [NAME] [flags]
@@ -105,13 +105,13 @@ kubectl [command] [TYPE] [NAME] [flags]
 
 - **NAME：** 指定资源的名称。名称也是大小写敏感的，如果省略名称，则会显示所有的资源，例如 ：`kubectl get pods`
 
-- **flags：** 指定可选的参数。例如：`-s 、-server`
+- **flags：** 指定可选的参数。例如：`-s 、-server、-o ...`
 
 **k8s** 支持的 **command** 有很多，我们可以跟 docker 一样使用 `kubectl --help` 来获取帮助文档：
 
 ![](https://gitee.com/cbuc/picture/raw/master/typora/20210411160248.png)
 
-文档很多，当然有些是常用的，有些是不常用的，小菜在这里给你们简单分个类，下次有需要可以直接查看分类中的结果~
+文档很多，当然有些是常用的，有些是不常用的，小菜在这里给你们简单分个类，下次有需要可以直接查看分类中的结果！
 
 ##### 命令分类
 
@@ -197,22 +197,22 @@ kubectl [command] [TYPE] [NAME] [flags]
 
 不管是 **命令式对象配置** 还是 **声明式对象配置** 我们都需要借助 **yaml** 资源清单创建。
 
-我们先来看看一个 pod controller(控制器)  的yaml 文件中有哪些内容：
+我们先来看看一个 **pod controller**(控制器)  的**yaml** 文件中有哪些内容：
 
 ![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423125521368.png)
 
-上面便是一个完整的 **deployment** 资源配置清单。老样子混个眼熟，不是每个 **deployment** 都需要这么多的配置，以下是必须存在的字段属性介绍：
+上面便是一个完整的 **deployment** 资源配置清单。内容很多，老样子我们先混个眼熟，不是每个 **deployment** 都需要这么多的配置，以下便是必须存在的字段属性介绍：
 
-|          名称          |  类型  |                   描述                   |
-| :--------------------: | :----: | :--------------------------------------: |
-|        version         | String |       属于 k8s 哪一个API 版本或组        |
-|          kind          | String |  资源类型，如`pod、deployment、service`  |
-|        metadata        | Object |           元数据对象，嵌套字段           |
-|     metadata.name      | String |             元数据对象的名字             |
-|          spec          | Object | 定义容器的规范，创建的容器应该有哪些特性 |
-|    spec.container[]    |  List  |              定义容器的列表              |
-| spec.container[].name  | String |                容器的名称                |
-| spec.container[].image | String |           定义要用到镜像的名称           |
+|            名称            |  类型  |                   描述                   |
+| :------------------------: | :----: | :--------------------------------------: |
+|        **version**         | String |       属于 k8s 哪一个API 版本或组        |
+|          **kind**          | String |  资源类型，如`pod、deployment、service`  |
+|        **metadata**        | Object |           元数据对象，嵌套字段           |
+|     **metadata.name**      | String |             元数据对象的名字             |
+|          **spec**          | Object | 定义容器的规范，创建的容器应该有哪些特性 |
+|    **spec.container**[]    |  List  |              定义容器的列表              |
+| **spec.container[].name**  | String |                容器的名称                |
+| **spec.container[].image** | String |           定义要用到镜像的名称           |
 
 #### 3）命令式对象配置
 
@@ -257,7 +257,7 @@ kubectl apply -f tset.yaml
 
 ### 二、实战入门
 
-接下来的阶段便是我们针对 k8s 中每个资源展开说明了，小伙伴们打起精神了哦！
+接下来的阶段便是我们针对 **k8s** 中 **NameSpace 和 Pod** 资源展开说明了，小伙伴们打起精神了哦！
 
 ![image-20210414125544325](https://gitee.com/cbuc/picture/raw/master/typora/image-20210414125544325.png)
 
@@ -289,7 +289,7 @@ kubectl apply -f tset.yaml
 apiVersion: v1
 kind: Namespace # yaml文件中大小写敏感
 metadata：
-  name：aaa-test
+  name：aaa-test  #命名空间的名称
 ```
 
 然后执行`kubectl create -f namespace.yml`， 这样子我们同样也可以获得一个名称为 **aaa-test** 的命名空间。
@@ -334,7 +334,7 @@ k8s 集群中的所有 **pod** 都在同一个网络地址空间中，也就是�
 
 - **普通 pod**
 
-这种就是我们日常中经常用到的。一旦被创建就会放入 **etcd** 中存储，接着就会被调度到任一节点上运行，当 Pod 里某个容器停止时，Kubernetes 会自动检测到这个问题并且重新启动这个 Pod 里某所有容器， 如果 Pod 所在的 Node 宕机，则会将这个 Node 上的所有 Pod 重新调度到其它节点上。
+这种就是我们`日常中经常用到`的。一旦被创建就会放入 **etcd** 中存储，接着就会被调度到任一节点上运行，当 Pod 里某个容器停止时，Kubernetes 会自动检测到这个问题并且重新启动这个 Pod 里某所有容器， 如果 Pod 所在的 Node 宕机，则会将这个 Node 上的所有 Pod 重新调度到其它节点上。
 
 - **静态 pod**
 
@@ -362,7 +362,7 @@ pod中有 5 中生命周期，我们都需要了解一下~
 
 ###### ⑤ pod 资源配置
 
-之前在 **docker** 我们有进行测试没有对 **docker** 资源进行限额的时候，运行一个 **elasticSearch** 镜像的时候服务器直接卡死。那么在 **docker** 能做到资源限额，**pod** 自然也可以。
+之前在 **docker** 我们有进行测试没有对 **docker** 资源进行限额的时候，运行一个 **elasticSearch** 镜像的时候服务器直接卡死。那么在 **docker** 能做到资源限额，**k8s** 中自然也可以。
 
 **Kubernetes** 中可以设置限额的计算资源有 **CPU** 和 **Memory** 两种。**Kubernetes** 我们想要进行配额限定需要设定两个参数：`Request` 和 `Limits` 
 
@@ -375,7 +375,7 @@ pod中有 5 中生命周期，我们都需要了解一下~
 
 ##### ㈡ pod 基操
 
-我们先来看一份 **pod** 资源清单：
+以下是一份 **pod** 的完整资源清单：
 
 ![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210416133540276.png)
 
@@ -387,23 +387,27 @@ pod中有 5 中生命周期，我们都需要了解一下~
 
 我们如果想要创建一个 pod ，只需要简单准备一份 **test.yml** 文件即可：
 
-![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423125732198.png)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424173545.png)
 
-然后通过 **命令式对象配置** 的指令 `kubectl create -f test.yml` 就可以获取到一个 nginx **pod**。这只是一个简单的pod 配置，我们在里面声明了两个容器：`nginx` 和 `java`。通过指令`kubectl get pod -n cbuc-test` 查看当前 **pod** 的状态。
+然后通过 **命令式对象配置** 的指令 `kubectl create -f test.yml` 就可以获取到一个含有 **nginx 和 centos** 容器的pod。然后我们通过指令`kubectl get pod -n cbuc-test` 查看当前 **pod** 的状态。
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424173052.png)
 
 docker 可以用 `docker exec -it` 进入容器，k8s 也是类似此命令：
 
 ```shell
-kubectl exec -it pod名称 -n 命名空间 bash
+kubectl exec -it pod名称 -c 容器名称 -n 命名空间 bash
 ```
 
 通过以上命令就可以进入到我们的pod中
 
-// todo
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424173253.png)
+
+如果 pod 中只有一个容器，`-c` 可以不用指定容器名称
 
 ###### ② 属性说明
 
-上面我们已经成功的创建了一个 pod，但是这只是一个简单的 pod 配置，我们可以针对该 **yaml** 文件展开扩展~
+上面我们已经成功的创建了一个 pod，但是这只是一个简单的 pod 配置，我们可以针对该 **yaml** 文件进行扩展~
 
 **1. imagePullPolicy**
 
@@ -425,17 +429,17 @@ kubectl exec -it pod名称 -n 命名空间 bash
 
 command 是用于在 pod 中的容器初始化完毕之后运行一个命令。
 
-![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423125756962.png)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424175318.png)
 
-我们在上面创建了一个 centos的pod，然后在pod初始化完成后，便会执行 command 中的命令，我们可以通过 `kubectl exec -it pod名称 -n 命名空间 bash` 然后进入到 `/mnt/test.txt`
+我们在上面创建了一个 centos的pod，然后在pod初始化完成后，便会执行 command 中的命令，我们可以通过 `kubectl exec -it pod名称 -n 命名空间 bash` 然后进入pod中查看 `/mnt/test.txt`
 
 或者我们可以在pod外部执行命令：
 
-// todo
-
 ```shell
-kubectl exec -it pod名称 -n 命名空间 -c centos /bin/sh / # tail -f /mnt/test.txt
+kubectl exec pod名称 -n 命名空间 -c 容器名称 -- shell命令
 ```
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424175416.png)
 
 **3. args** 
 
@@ -454,15 +458,11 @@ kubectl exec -it pod名称 -n 命名空间 -c centos /bin/sh / # tail -f /mnt/te
 
 用于在 pod 中的容器设置环境变量
 
-![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423125846767.png)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424180407.png)
 
-执行命令查看：
+进入pod查看：
 
-//todo
-
-```shell
-kubectl exec -it pod名称 -n 命名空间 -c centos /bin/sh / # tail -f /mnt/test.txt
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424180318.png)
 
 **5. ports**
 
@@ -561,61 +561,15 @@ ports 在 k8s 的属性类型是 Object，我们可以通过 `kubectl explain po
 
 这里简单看一个使用例子：
 
-//todo
+我们在初始化容器中定义了一个 **centos** 容器，只有 ping 通对应的地址才会启动成功，已知当前网络能通 `192.168.108.101`
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: pod-initcontainer
-  namespace: dev
-spec:
-  containers:  # 主容器
-  - name: main-container
-    image: nginx:1.17.1
-    ports:
-    - name: nginx-port
-      containerPort: 80
-  initContainers:  # 初始化容器
-    - name: test-mysql
-      image: busybox:1.30
-       command: ['sh', '-c', 'until ping 192.168.109.201 -c 1 ; do echo waiting for
-mysql...; sleep 2; done;']
-    - name: test-redis
-      image: busybox:1.30
-      command: ['sh', '-c', 'until ping 192.168.109.202 -c 1 ; do echo waiting for
-reids...; sleep 2; done;']
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424182412.png)
 
-```shell
-# 创建pod
-[root@master ~]# kubectl create -f pod-initcontainer.yaml
-pod/pod-initcontainer created
-# 查看pod状态
-# 发现pod卡在启动第一个初始化容器过程中，后面的容器不会运行
-root@master ~]# kubectl describe pod pod-initcontainer -n dev
-........
-Events:
-Type Reason Age From Message
----- ------ ---- ---- -------
-Normal Scheduled 49s default-scheduler Successfully assigned dev/pod-
-initcontainer to node1
-Normal Pulled 48s kubelet, node1 Container image "busybox:1.30" already
-present on machine
-Normal Created 48s kubelet, node1 Created container test-mysql
-Normal Started 48s kubelet, node1 Started container test-mysql
-# 动态查看pod
-[root@master ~]# kubectl get pods pod-initcontainer -n dev -w
-NAME READY STATUS RESTARTS AGE
-pod-initcontainer 0/1 Init:0/2 0 15s
-pod-initcontainer 0/1 Init:1/2 0 52s
-pod-initcontainer 0/1 Init:1/2 0 53s
-pod-initcontainer 0/1 PodInitializing 0 89s
-pod-initcontainer 1/1 Running 0 90s
-# 接下来新开一个shell，为当前服务器新增两个ip，观察pod的变化
-[root@master ~]# ifconfig ens33:1 192.168.109.201 netmask 255.255.255.0 up
-[root@master ~]# ifconfig ens33:2 192.168.109.202 netmask 255.255.255.0 up
-```
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424182329.png)
+
+可以看到，在初始化容器成功启动的情况下，我们的 **nginx** 容器也能运行成功，但是如果我们把 ping 的地址改一下，就会导致初始化容器启动失败，那么正常容器也是会启动失败的：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424181530.png)
 
 **⑷ 钩子函数**
 
@@ -644,26 +598,7 @@ pod-initcontainer 1/1 Running 0 90s
 
 调用容器内Web应用的URL，如果返回的状态码在200和399之间，则认为程序正常，否则不正常
 
-```shell
-apiVersion: v1
-kind: Pod
-metadata:
-  name: nginx-pod
-  namespace: aaa-test
-spec:
-  containers:
-  - name: nginx01
-    image: nginx:1.19.0
-    lifecycle:
-      postStart: 
-        httpGet:
-          path: /  # URL请求地址
-          port: 8080  # 端口
-          host: 192.168.100.102  #主机地址
-          scheme: HTTP # 支持的协议，http或https
-```
-
-// todo 查看效果
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424182619.png)
 
 ###### ② 容器探测
 
@@ -690,25 +625,7 @@ spec:
 
 - **httpGet**
 
-```shell
-apiVersion: v1
-kind: Pod
-metadata:
-  name: nginx-pod
-  namespace: aaa-test
-spec:
-  containers:
-  - name: nginx01
-    image: nginx:1.19.0
-    livenessProbe:
-      httpGet:
-        path: /  # URL请求地址
-        port: 8080  # 端口
-        host: 192.168.100.102  #主机地址
-        scheme: HTTP # 支持的协议，http或https
-```
-
-// todo 查看效果
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424182644.png)
 
 ###### ③ 重启策略
 
@@ -740,13 +657,13 @@ spec:
 
 这个属性用于强制约束将 Pod 调度到指定名称的 node节点上，这种方式，其实就是直接跳过 **scheduler** 的调度逻辑。
 
-![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423130234079.png)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424201058.png)
 
 上面已经准备了一个 pod 的yaml文件，我们创建看下是否能够调度到我们想要的节点上
 
-//todo
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424201246.png)
 
-可以看到 pod 节点已经成功的调度到名称为 node01 的节点上了
+可以看到 pod 节点已经成功的调度到名称为 **node02** 的节点上了
 
 - **NodeSelector**
 
@@ -757,8 +674,12 @@ spec:
  首先对 node 节点打上标签：
 
 ```shell
-kubectl label nodes node01 app=node-dev
+kubectl label nodes node02 app=node-dev
 ```
+
+查看是否打成功：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424201611.png)
 
 然后准备一份 pod yaml文件：
 
@@ -766,7 +687,7 @@ kubectl label nodes node01 app=node-dev
 
 然后我们创建后查看：
 
-//todo
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424203031.png)
 
 ###### ② 亲和度调度
 
@@ -786,11 +707,11 @@ kubectl label nodes node01 app=node-dev
 
 这个限制和上面说到的定向调度有点像，只选择满足条件的 node 节点进行调度，使用例子如下：
 
-![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423130317687.png)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424203951.png)
 
-上面我们创建了一个 pod，会在标签 `key`为 **app**，且`value` 为 **node-pro 或 node-test** 的节点上选择，但是并不存在具备这个标签的节点，因此这个pod最终的结果是启动失败的~
+上面我们创建了一个 pod，会在标签 `key`为 **app**，且`value` 为 **node-pro 或 node-test** 的节点上选择，但是并不存在具备这个标签的节点，因此这个pod 一直处于挂起的状态~
 
-//todo 结果截图
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424203832.png)
 
 我们上面看到了一个新的属性 `matchExpressions`，这个是用来编写关系表达式的，具体使用方法如下：
 
@@ -808,15 +729,17 @@ kubectl label nodes node01 app=node-dev
 
 Ⅱ、 **preferredDuringSchedulingIgnoredDuringExecution (软限制)**
 
-上面已经了解到了 **硬限制** 的使用，**软限制** 的使用也是一样的，我们直接来看 yaml 文件：
+上面已经了解到了 **硬限制** 的使用，**软限制** 的使用如下，我们直接来看 yaml 文件：
 
-![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210423130352702.png)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424204545.png)
 
-这份 yaml 文件和 **硬限制** 的 yaml 是一致的，只是 **软硬** 属性换了一下，硬限制通过这份yaml创建 pod 失败的，我们来试下 软限制创建 pod：
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424204908.png)
 
-// todo
+这边可以看到虽然不存在满足条件的node，但是也是可以成功运行pod 的，只是调度到了不满足条件的 node 上！
 
-这边可以看到虽然不存在满足条件的node，但是也是可以成功运行pod 的，只是调度到了不满足调节的 node 上！
+我们来总结一下硬限制和软限制的用法：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424205459.png)
 
 - **podAffinity（pod 亲和性）** 
 
@@ -833,7 +756,7 @@ kubectl label nodes node01 app=node-dev
 > - 如果值为 `kubernetes.io/hostname` ，说明是以 node 节点为区分范围
 > - 如果值为 `kubernetes.io/os`， 则以 node 节点的**操作系统**来区分
 
-了解完硬限制的编写，软限制也只是换了个属性名称，这里不再赘诉~
+了解完硬限制的编写，软限制也是与上面 node亲和度的用法相似，这里不再赘诉~
 
 - **podAntiAffinity（pod反亲和性）**
 
@@ -855,7 +778,7 @@ kubectl label nodes node01 app=node-dev
 
 我们先来看下目前 pod 存在于每个节点的情况，
 
-//todo 
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424210138.png)
 
 是否发现了一个问题，那就是 pod 基本都分布在了 node 节点上，而 master 节点却没有运行任何pod。而这个原因便是和我们要讲到的`污点` 有关系了！
 
@@ -892,11 +815,9 @@ kubectl taint nodes node01 key:effect-
 kubectl taint nodes node01 key-
 ```
 
-//todo 试验
+而 k8s中的 **master**节点之所以没有运行任何pod，那便是因为 **master** 节点上已经存在了污点：
 
-因此我们可以看到三种污点的不同用法。而 k8s中的 **master**节点之所以没有运行任何pod，那便是因为 **master** 节点上已经存在了污点：
-
-//todo
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424210426.png)
 
 ###### ④ 容忍(Toleration)
 
@@ -931,7 +852,7 @@ tolerations:
 
 关于 k8s 中 pod 的介绍到这里就结束啦~个人觉得还是挺详细的，如果能够认真看下来，相信对 pod 已经有足够了解了。但是你认为 k8s 到这里就结束了吗？那肯定不会的，碍于篇幅，所以其他资源组件留到下一节介绍~请动动小手，点点关注不迷路。路漫漫，小菜与你一同求索！
 
-![看完不赞，都是坏蛋](https://gitee.com/cbuc/picture/raw/master/typora/aHR0cHM6Ly93d3cuNTJkb3V0dS5jbi9zdGF0aWMvdGVtcC9waWMvOWJkNjhkMTUwZjA3ODdjNTYwYTQzOWRhMzU5YTU4MGEucG5n)
+![](https://gitee.com/cbuc/picture/raw/master/typora/20210424210940.gif)
 
 > 今天的你多努力一点，明天的你就能少说一句求人的话！
 >
@@ -939,3 +860,4 @@ tolerations:
 >
 >
 > 微信公众号已开启，**小菜良记**，没关注的同学们记得关注哦！
+
