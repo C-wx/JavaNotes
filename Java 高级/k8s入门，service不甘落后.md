@@ -1,11 +1,11 @@
-大家好，我是小菜，一个渴望在互联网行业做到蔡不菜的小菜。可柔可刚，点赞则柔，白嫖则刚！
+大家好，我是小菜，前面几篇文章我们已经从 k8s 集群的搭建然后到 k8s 中**NameSpace** 再说到了 k8s 中 **Pod** 的使用，如果还干到意犹未尽，那么接下来的 **Pod 控制器** 同样是一道硬菜！
 **死鬼~看完记得给我来个三连哦！**
 
 
 ![](https://gitee.com/cbuc/picture/raw/master/typora/17169c46045528af)
 
 
->本文主要介绍 `k8s 中pod控制器`
+>本文主要介绍 `k8s中pod控制器的使用`
 >
 >如有需要，可以参考
 >
@@ -14,17 +14,21 @@
 >
 >微信公众号已开启，**小菜良记**，没关注的同学们记得关注哦！
 
-上篇文章我们讲完了 **k8s** 中 pod 的使用，那可是大篇幅，看完肯定美滋滋~ 那这篇我们继续来到 **k8s** 的殿堂！
+**前文回顾：**
+
+- [《k8s 集群搭建》不要让贫穷扼杀了你学 k8s 的兴趣！](https://mp.weixin.qq.com/s/iQXX6Xm4SKJkTCKRN0qDzA)
+
+- [万字警告 - k8s入门，理应Pod先行！](https://mp.weixin.qq.com/s/er44KFAbuaUNOFvtDDvNsg)
 
 既然有 pod 的存在，那便需要对pod 进行管理，控制器又怎么了少的了，那么接下来的时间交给小菜，带你一探到底！
 
 ## Pod控制器
 
-### 前头了解
+### 一、前头预热
 
 我们已经清楚了Pod是 **k8s** 中最小的管理单元。想想我们之前是怎么创建 pod，动动小脑袋，隐约想起好像有3种方式！1. **命令式对象管理** 2. **命令式对象配置** 3. **声明式对象配置** 。 如果能想到这三种，说明上篇没白学！但是这三种的创建方式，我们都是围绕 **pod** 展开的，不管是通过命令直接创建，还是通过 yaml文件配置完再生成，我们生成的 `Kind` 都是直接指明 `Pod`，仿佛我们对 pod 的认知也局限于此了。但是今天，小菜就带你认识点不一样的东西，我们可以通过 **Pod管理器** 来创建 pod！
 
-#### 概念
+#### 1）概念
 
 什么是 pod 控制器呢？上面只是简单说了可以用来创建 pod，难道作用也仅此而已，那我何必又多此一举呢~
 
@@ -46,7 +50,7 @@
 
 这么多控制器，看了也别慌，接下来我们一个个认识过去~
 
-### 实际操作
+### 二、实际操作
 
 #### 1）ReplicaSet
 
@@ -336,7 +340,7 @@ kubectl apply -f /root/metrics-server/deploy/1.8+/
 kubectl top node
 ```
 
-![](C:/Users/14046/AppData/Roaming/Typora/typora-user-images/image-20210501152824414.png)
+![](https://static01.imgkr.com/temp/2a8d305c789b489d9307c3891a342932.png)
 
 查看pod资源使用情况
 
@@ -463,7 +467,7 @@ spec:
         command: ["bin/sh","-c","for i in 9 8 7 6 5 4 3 2 1; do echo $i;sleep 2;done"]
 ```
 
-![](C:/Users/14046/AppData/Roaming/Typora/typora-user-images/image-20210501153736929.png)
+![](https://static01.imgkr.com/temp/37a7ca2c70cb4bfaa199eb6cb858c62e.png)
 
 **通过观察pod状态可以看到，pod在运行完毕任务后，就会变成Completed状态**
 
@@ -471,7 +475,7 @@ spec:
 
 **CronJob**控制器简称 **CJ**，它的作用是以 Job 控制器为管理单位，借助它管理 pod 资源对象。Job 控制器定义的任务在创建时便会立刻执行，但 cronJob 控制器可以控制其运行的 **时间点**及 **重复运行** 的方式。
 
-![](C:/Users/14046/AppData/Roaming/Typora/typora-user-images/image-20210501154604536.png)
+![](https://static01.imgkr.com/temp/ee88ac033f33423b997c175c2b619ad2.png)
 
 **资源清单模板：**
 
@@ -509,7 +513,7 @@ spec:
 
 ![](https://gitee.com/cbuc/picture/raw/master/typora/20210501161426.png)
 
-从结果上看我们也已经成功实现了定时任务，每秒执行一次~
+从结果上看我们也已经成功实现了定时任务，每秒执行了一次~
 
 **END**
 
