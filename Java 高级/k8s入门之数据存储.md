@@ -64,18 +64,18 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx:1.14-apline
+    image: nginx:1.14-alpine
     ports:
    	- containerPort: 80
    	volumeMounts:	# 将 nginx-Log 挂载到nginx容器中，容器内目录为/var/log/nginx
    	- name: nginx-log
    	  mountPath: /var/log/nginx
-  volume:	#在此声明volume
+  volumes:	#在此声明volume
   - name: nginx-log
     emptyDir: {}
 ```
 
-然后我们创建后可以看看**emptyDir**存储卷在宿主机的位置。在Pod临时目录下存在my-emptydir-vol目录，容器创建的文件就存放在该目录中
+然后我们创建后可以看看**emptyDir**存储卷在宿主机的位置。默认情况下宿主机中声明volume的目录位置是在 `/var/lib/kubelet/pods/<Pod 的 ID>/volumes/kubernetes.io~<Volume 类型 >/<Volume 名字 >` 中。
 
 #### 2）HostPath
 
@@ -92,13 +92,13 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: nginx
-  namespace: nginx-pod
+  namespace: cbuc-test
   labels:
     app: nginx-pod
 spec:
   containers:
   - name: nginx
-    image: nginx:1.14-apline
+    image: nginx:1.14-alpine
     ports:
     - containerPort: 80
     volumeMounts:
@@ -106,7 +106,7 @@ spec:
       mountPath: /var/log/nginx
   volumes:
   - name: nginx-log
-    hostPath:		# 指定宿主机目录为 /data/nginx/log
+    hostPath:           # 指定宿主机目录为 /data/nginx/log
       path: /data/nginx/log
       type: DirectoryOrCreate   # 创建类型
 ```
@@ -141,10 +141,10 @@ spec:
 # 安装 nfs 服务器
 yum install -y nfs-utils
 # 准备共享目录
-mkdir /data/nfs/nginx
+mkdir -p /data/nfs/nginx
 # 将共享目录以读写权限暴露给 192.168.108.0/24 网段的所有主机
 vim /etc/exports
-more /etc/exports
+# 添加以下内容
 /data/nfs/nginx    192.168.108.0/24(rw,no_root_squash)
 # 启动 nfs 服务器
 systemctl start nfs
@@ -169,7 +169,7 @@ metadata:
 spec:
   containers:
   - name: nginx-pod
-    image: nginx:1.14-apline
+    image: nginx:1.14-alpine
     ports:
     - containerPort: 80
     volumeMounts:
@@ -183,6 +183,8 @@ spec:
 ```
 
 创建完pod后，我们可以进入到 `/data/nfs` 目录下查看到两个日志文件了
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210523173451789.png)
 
 ### 二、高级存储
 
@@ -268,7 +270,7 @@ vim /etc/exports
 /data/pv1   192.168.108.0/24(rw,no_root_squash)
 ```
 
-完成以上步骤后我们就需要创建3个 PV 的资源清单了：
+完成以上步骤后我们就需要创建1个 PV：
 
 ```yaml
 apiVersion: v1
@@ -289,7 +291,9 @@ spec:
     server: 192.168.108.100
 ```
 
-通过创建后我们可以查看到PV：//todo
+通过创建后我们可以查看到PV：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210523173807183.png)
 
 #### 2）PVC
 
@@ -336,25 +340,25 @@ pvc在定义时可以设定需要的后端存储的类别，只有设置了该cl
 
 ```yaml
 apiVersion: v1
-kind: persistentVolumeClaim
+kind: PersistentVolumeClaim
 metadata:
   name: pvc01
   namespace: cbuc-test
 spec:
   accessModes:
   - ReadWriteMany
-  resource:
-    request:
+  resources:
+    requests:
       storage: 1Gi
 ```
 
 创建后我们先查看PVC是否创建成功
 
-// todo
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210523174132168.png)
 
 然后再查看pv是否已经被pvc绑定上
 
-// todo
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210523174207142.png)
 
 #### 3）实际使用
 
@@ -367,23 +371,18 @@ metadata:
   name: pod-pvc
   namespace: cbuc-test
 spec:
- containers:
- - name: test
-   image: cbuc/test/java:v1.0
-   command: ["/bin/bash", "-c", "while true;do echo pod1 >> /data/out.txt; sleep 10;done;"]
-   volumeMounts:
-   - name: test-pv
-     mountPath: /data/
+  containers:
+  - name: nginx01
+    image: nginx:1.14-alpine
+    volumeMounts:
+    - name: test-pv
+      mountPath: /var/log/nginx
   volumes:
   - name: test-pv
-    persistentVolumeClaim：
+    persistentVolumeClaim:
       claimName: pvc01
-      readOnly: false
+      readOnly: true
 ```
-
-创建好pod之后，我们查看 NFS中存储文件：
-
-//todo
 
 #### 4）生命周期
 
@@ -432,15 +431,15 @@ metadata:
   namespace: cbuc-test
 data:
   info:
-    username: cbuc
-    sex: male
+    username:cbuc
+    sex:male
 ```
 
 使用方式很简单，少了 `spec`，多了 `data.info`，只需在 `info` 下级以 `key: value` 的方式存储自己想要配置的配置文件即可
 
 通过`kubectl create -f configMap.yaml`命令可创建出一个 **ConfigMap**
 
-//todo
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210523174849358.png)
 
 具体使用如下，我们需要创建一个Pod：
 
@@ -457,7 +456,7 @@ spec:
     volumeMounts:		# 将 configMap 挂载到目录中
     - name: config
       mountPath: /var/configMap/config
-  volume:
+  volumes:
   - name: config
     configMap:
       name: cmp  # 上面我们创建 configMap 的名称
@@ -465,7 +464,7 @@ spec:
 
 然后通过命令`kubectl create -f pod-cmp.yaml`创建出测试Pod，然后可查看pod中的配置文件：
 
-// todo
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210523175229064.png)
 
 #### 2）Secret
 
@@ -475,9 +474,11 @@ spec:
 
 ```shell
 # 加密用户名
-echo -n 'cbuc' | base64
+[root@master test]# echo -n 'cbuc' | base64
+Y2J1Yw==
 # 加密密码
-echo -n '123456' | base64
+[root@master test]# echo -n '123456' | base64
+MTIzNDU2
 ```
 
 然后准备 Secret 资源清单文件
@@ -490,8 +491,8 @@ metadata:
   namespace: cbuc-test
 type: Opaque    # 表示base64编码格式的Secret
 data:
-  username: 
-  password:
+  username: Y2J1Yw==
+  password: MTIzNDU2
 ```
 
 通过命令`kubectl create -f secret.yaml`创建 Secret，然后我们再准备一份Pod资源清单：
@@ -515,9 +516,11 @@ spec:
       secretName: secret
 ```
 
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210524211556720.png)
+
 创建后我们进入pod查看配置文件，可以发现配置文件的信息已经是解码后的
 
-//todo
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210524211818975.png)
 
 **END**
 
@@ -530,3 +533,4 @@ spec:
 >
 >
 > 微信公众号已开启，**小菜良记**，没关注的同学们记得关注哦！
+
