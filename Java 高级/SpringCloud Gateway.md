@@ -103,7 +103,9 @@ SpringCloud 中所集成的 Zuul 版本，采用的是 Tomcat 容器，使用的
 
 #### 三、掌握 Gateway
 
-#### Gateway 依赖
+##### 1. Gateway 依赖
+
+最关键的一步便是引入网关的依赖
 
 ```xml
 <!--gateway网关-->
@@ -113,15 +115,62 @@ SpringCloud 中所集成的 Zuul 版本，采用的是 Tomcat 容器，使用的
 </dependency>
 ```
 
+##### 2. 项目结构
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210609232945176.png)
+
+我这里简单的创建了一个微服务项目，项目里有一个 `store-gateway` 服务网关 和一个 `store-order` 订单服务。因为我们这篇只说明服务网关的作用，不需要太多服务提供者和消费者！
+
+在`store-order`订单服务中只有一个控制器`OrderController`，里面也只有一个简单到发指的API
+
+```java
+@RestController
+@RequestMapping("order")
+public class OrderController {
+    
+    @GetMapping("/{id:.+}")
+    public String detail(@PathVariable String id) {
+        return StringUtils.join("获取到了ID为", id, "的商品");
+    }
+    
+}
+```
+
+我们分别启动两个服务，然后访问订单服务的API：
+
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210609233249610.png)
 
 
 
+结果肯定是符合预期的，不至于翻车。`8001` 是订单服务的接口，这个时候我们可以了解到，原来微服务架构每个服务独立启动，都是可以独立访问的，也就相当于传统的单体服务。
 
+我们想想看，如果用端口来区分每个服务，是否也可以达到微服务的效果？理论上好像是可以的，但是如果成百上千个服务呢？端口爆炸，维护爆炸，治理爆炸... 不说别的，心态直接爆炸了！这个时候我们就想着如果只用统一的一个端口访问各个服务，那该多好！端口一致，路由前缀不一致，通过路由前缀来区分服务，这种方式将我们带入了服务网关的场景。是的，这里就说到了服务网关的功能之一 --- `路由转发`。
 
+##### 3. 网关出现
 
+既然要用到网关，那我们上面创建的服务之一 `store-gateway` 就派上用场了！怎么用？我们在配置文件做个简单的修改：
 
+```yaml
+spring:
+  application:
+    name: store-gateway
+  cloud:
+    gateway:
+      routes: 
+        - id: store-order 
+          uri: http://localhost:8001 
+          order: 1
+          predicates:
+            - Path=/store-order/** 
+          filters:
+            - StripPrefix=1
+```
 
+不多废话，我们直接启动网关，通过访问`http://localhost:8000/store-order/order/123` 看是否能获取到订单？
 
+![](https://gitee.com/cbuc/picture/raw/master/typora/image-20210609234125248.png)
 
+很顺利，我们成功拿到了ID 为 123 的订单商品！
 
+我们看下 URL 的组成：
 
